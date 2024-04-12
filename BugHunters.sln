@@ -6,6 +6,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8A37B0AD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugHunters.Api", "src\BugHunters.Api\BugHunters.Api.csproj", "{83BE4886-8B27-450D-9B3B-DF91DDB3CA71}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "tests\UnitTests\UnitTests.csproj", "{794B5741-ADEA-4E7B-AA3F-DFA7AF1C1688}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,11 +15,16 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{83BE4886-8B27-450D-9B3B-DF91DDB3CA71} = {4849190C-0C3D-4BB4-A77D-0E5FA8FCDA80}
+		{794B5741-ADEA-4E7B-AA3F-DFA7AF1C1688} = {8A37B0AD-8C9C-419B-9D8D-1815BE20429F}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{83BE4886-8B27-450D-9B3B-DF91DDB3CA71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{83BE4886-8B27-450D-9B3B-DF91DDB3CA71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83BE4886-8B27-450D-9B3B-DF91DDB3CA71}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83BE4886-8B27-450D-9B3B-DF91DDB3CA71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{794B5741-ADEA-4E7B-AA3F-DFA7AF1C1688}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{794B5741-ADEA-4E7B-AA3F-DFA7AF1C1688}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{794B5741-ADEA-4E7B-AA3F-DFA7AF1C1688}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{794B5741-ADEA-4E7B-AA3F-DFA7AF1C1688}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

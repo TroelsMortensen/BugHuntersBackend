@@ -1,24 +1,24 @@
 ﻿using BugHunters.Api.Common.HandlerContract;
 using BugHunters.Api.Entities;
-using BugHunters.Api.Entities.Values;
 using BugHunters.Api.Persistence;
 
 namespace BugHunters.Api.Features.Hunters.RegisterHunter;
 
-public class RegisterHunterHandler(BugHunterContext context) : ICommandHandler<RegisterHunterCommand>
+public class RegisterHunterHandler(BugHunterContext context, CreateHunterService service) : ICommandHandler<RegisterHunterCommand>
 {
     public async Task<Result<None>> HandleAsync(RegisterHunterCommand command)
     {
-        Result<HunterId> hunterIdResult = HunterId.FromString(command.Id);
-        Result<ViaId> viaIdResult = ViaId.FromString(command.ViaId);
-
-        Result<None> combined = Result.CombineResultsInto<None>(hunterIdResult, viaIdResult);
-        if (combined.IsFailure)
+        Result<Hunter> hunterResult = service.CreateHunter(
+            command.Id,
+            command.Name,
+            command.ViaId);
+        
+        if (hunterResult.IsFailure)
         {
-            return combined;
+            return hunterResult.Errors.ToList();
         }
 
-        Hunter hunter = new (hunterIdResult.Payload, command.Name, viaIdResult.Payload);
+        Hunter hunter = hunterResult.Payload;
 
         await context.Hunters.AddAsync(hunter);
         await context.SaveChangesAsync();

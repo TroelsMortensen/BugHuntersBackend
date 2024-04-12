@@ -23,7 +23,6 @@ public record ViaId
                 () => IsStudentNumberOrTeacherInitials(value),
                 new ResultError("Hunter.ViaId", "Invalid Via ID format. Must be 6 digits, or 3-4 letters.")
             )
-            .ToResult()
             .WithPayloadIfSuccess(() => new ViaId(value));
 
     private static bool IsStudentNumberOrTeacherInitials(string value)

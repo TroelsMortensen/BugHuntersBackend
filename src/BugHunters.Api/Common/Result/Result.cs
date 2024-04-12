@@ -91,7 +91,7 @@ public abstract class Result
 
     protected readonly List<ResultError> errors = [];
 
-  
+
     public static Result<T> Success<T>(T value)
         => new(value);
 
@@ -124,5 +124,5 @@ public record None;
 public interface IFluentResultValidation<T>
 {
     IFluentResultValidation<T> AssertThat(Func<bool> validation, ResultError error);
-    Result<T> ToResult();
+    public Result<T> WithPayloadIfSuccess(Func<T> instantiatePayload);
 }

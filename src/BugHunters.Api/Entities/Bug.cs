@@ -1,6 +1,5 @@
-﻿namespace BugHunters.Api.Entities;
+﻿using BugHunters.Api.Entities.Values.Bug;
 
-public record Bug
-{
-    
-}
+namespace BugHunters.Api.Entities;
+
+public record Bug(BugId Id, string name, string Description, string LocationDescription, byte[] Image);

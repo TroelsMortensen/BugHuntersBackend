@@ -8,12 +8,27 @@ public record ViaId
         => Value = value;
 
     public static Result<ViaId> FromString(string value)
+        => Create(Prepare(value));
+
+    private static string Prepare(string value)
+        => value
+            .ToLower()
+            .Replace("@via.dk", "")
+            .Replace("@viauc.dk", "")
+            .Trim();
+
+    private static Result<ViaId> Create(string value)
         => Result.StartValidation<ViaId>()
             .AssertThat(() => IsStudentNumberOrTeacherInitials(value), new ResultError("Hunter.ViaId", "Invalid ViaId format."))
             .ToResult()
-            .WithPayloadIfSuccess(() => new ViaId(value.ToLower()));
+            .WithPayloadIfSuccess(() => new ViaId(value));
 
     private static bool IsStudentNumberOrTeacherInitials(string value)
-        => value.Length == 6 && value.All(char.IsDigit) ||
-           (value.Length is >= 3 and <= 4 && value.All(char.IsLetter));
+        => IsSixDigits(value) || IsValidInitials(value);
+
+    private static bool IsValidInitials(string value)
+        => (value.Length is >= 3 and <= 4 && value.All(char.IsLetter));
+
+    private static bool IsSixDigits(string value)
+        => value.Length == 6 && value.All(char.IsDigit);
 }

@@ -1,4 +1,4 @@
-﻿using BugHunters.Api.Entities.Values;
+﻿using BugHunters.Api.Entities.Values.Hunter;
 
 namespace BugHunters.Api.Entities;
 

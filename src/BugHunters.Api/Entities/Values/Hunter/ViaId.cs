@@ -1,4 +1,4 @@
-namespace BugHunters.Api.Entities.Values;
+namespace BugHunters.Api.Entities.Values.Hunter;
 
 public record ViaId
 {

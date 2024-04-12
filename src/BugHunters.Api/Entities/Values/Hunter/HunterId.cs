@@ -1,7 +1,12 @@
-namespace BugHunters.Api.Entities.Values;
+namespace BugHunters.Api.Entities.Values.Hunter;
 
-public record HunterId(Guid Value)
+public record HunterId
 {
+    public Guid Value { get; }
+
+    private HunterId(Guid guid)
+        => Value = guid;
+
     public static Result<HunterId> FromString(string value)
         => Guid.TryParse(value, out _)
             ? new HunterId(Guid.Parse(value))

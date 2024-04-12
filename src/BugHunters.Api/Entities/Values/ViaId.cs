@@ -11,7 +11,7 @@ public record ViaId
         => Result.StartValidation<ViaId>()
             .AssertThat(() => IsStudentNumberOrTeacherInitials(value), new ResultError("Hunter.ViaId", "Invalid ViaId format."))
             .ToResult()
-            .WithPayloadIfSuccess(() => new ViaId(value));
+            .WithPayloadIfSuccess(() => new ViaId(value.ToLower()));
 
     private static bool IsStudentNumberOrTeacherInitials(string value)
         => value.Length == 6 && value.All(char.IsDigit) ||

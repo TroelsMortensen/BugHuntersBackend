@@ -7,8 +7,6 @@ namespace BugHunters.Api.Features.Hunters.RegisterHunter;
 public class RegisterHunterEndpoint(ICommandHandler<RegisterHunterCommand> handler)
     : ApiEndpoint.WithRequest<RegisterHunterEndpoint.Request>.WithoutResponse
 {
-    public record Request(string Name, string ViaId);
-
     [HttpPost("/hunters/register")]
     public override async Task<ActionResult> HandleAsync([FromBody]Request request)
     {
@@ -20,4 +18,6 @@ public class RegisterHunterEndpoint(ICommandHandler<RegisterHunterCommand> handl
             ? Ok(id) 
             : BadRequest(result.Errors);
     }
+
+    public record Request(string Name, string ViaId);
 }

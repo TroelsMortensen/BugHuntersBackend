@@ -2,8 +2,13 @@
 
 public class BugId
 {
-    public static Result<Bug> FromString(string value)
+    public Guid Value { get; }
+
+    private BugId(Guid guid)
+        => Value = guid;
+
+    public static Result<BugId> FromString(string value)
         => Guid.TryParse(value, out _)
-            ? new HunterId(Guid.Parse(value))
-            : new ResultError("Hunter.Id", "Invalid HunterId format. Must be a valid GUID.");
+            ? new BugId(Guid.Parse(value))
+            : new ResultError("Bug.Id", "Invalid Bug ID format. Must be a valid GUID.");
 }

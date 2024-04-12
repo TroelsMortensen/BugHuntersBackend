@@ -11,8 +11,8 @@ public class CreateHunterServiceTest
     public void CreateHunter_ValidInput_ReturnSuccess(string id, string name, string viaId)
     {
         // Arrange
-        CreateHunterService service = new ();
-        
+        CreateHunterService service = new();
+
         // Act
         Result<Hunter> result = service.CreateHunter(id, name, viaId);
         Hunter hunter = result.Payload;
@@ -23,6 +23,7 @@ public class CreateHunterServiceTest
         Assert.Equal(viaId, hunter.ViaId.Value.ToString());
     }
 
+
     public static IEnumerable<object[]> GenerateValidInput()
     {
         string[] guids =
@@ -32,7 +33,8 @@ public class CreateHunterServiceTest
             Guid.NewGuid().ToString()
         ];
         string[] names = ["John Doe", "Jane Doe", "John Smith"];
-        string[] viaIds = [
+        string[] viaIds =
+        [
             "250312",
             "330512",
             "310742",
@@ -42,15 +44,52 @@ public class CreateHunterServiceTest
             "mivi",
             "jknr"
         ];
-        foreach (string guid in guids)
-        {
-            foreach (string name in names)
-            {
-                foreach (string viaId in viaIds)
-                {
-                    yield return [guid, name, viaId];
-                }
-            }
-        }
+
+        return StringArraysToObjectArray(guids, names, viaIds);
+    }
+
+    private static IEnumerable<object[]> StringArraysToObjectArray(string[] guids, string[] names, string[] viaIds)
+        => from guid in guids
+            from name in names
+            from viaId in viaIds
+            select new object[] { guid, name, viaId };
+
+    [Theory]
+    [MemberData(nameof(GenerateInvalidInput))]
+    public void CreateHunter_InvalidInput_ReturnFailure(string id, string name, string viaId)
+    {
+        // Arrange
+        CreateHunterService service = new();
+
+        // Act
+        Result<Hunter> result = service.CreateHunter(id, name, viaId);
+
+        // Assert
+        Assert.True(result.IsFailure);
+    }
+
+    public static IEnumerable<object[]> GenerateInvalidInput()
+    {
+        string[] guids =
+        [
+            "",
+            "invalidGuid"
+        ];
+        string[] names = [""];
+        string[] viaIds =
+        [
+            "25031",
+            "3312",
+            "342",
+            "2",
+            "",
+            "tr",
+            "i",
+            "mivid",
+            "jknrfjdk",
+            "123kjn",
+            "jf2"
+        ];
+        return StringArraysToObjectArray(guids, names, viaIds);
     }
 }

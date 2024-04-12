@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace BugHunters.Api.Features.Common.Endpoint;
+namespace BugHunters.Api.Common.Endpoint;
 
 public static class ApiEndpoint
 {

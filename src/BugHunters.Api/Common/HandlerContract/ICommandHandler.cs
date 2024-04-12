@@ -1,4 +1,4 @@
-﻿namespace BugHunters.Api.Features.Common.HandlerContract;
+﻿namespace BugHunters.Api.Common.HandlerContract;
 
 public interface ICommandHandler<in TCommand>
 {

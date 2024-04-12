@@ -1,4 +1,4 @@
-﻿using BugHunters.Api.Features.Common.HandlerContract;
+﻿using BugHunters.Api.Common.HandlerContract;
 using BugHunters.Api.Persistence;
 
 namespace BugHunters.Api.Features.RegisterHunter;

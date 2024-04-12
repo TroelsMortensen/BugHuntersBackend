@@ -1,5 +1,5 @@
-﻿using BugHunters.Api.Features.Common.Endpoint;
-using BugHunters.Api.Features.Common.HandlerContract;
+﻿using BugHunters.Api.Common.Endpoint;
+using BugHunters.Api.Common.HandlerContract;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BugHunters.Api.Features.RegisterHunter;

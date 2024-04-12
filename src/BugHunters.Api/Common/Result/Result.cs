@@ -91,6 +91,7 @@ public abstract class Result
 
     protected readonly List<ResultError> errors = [];
 
+  
     public static Result<T> Success<T>(T value)
         => new(value);
 

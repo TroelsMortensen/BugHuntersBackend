@@ -1,3 +1,3 @@
 ﻿namespace BugHunters.Api.Features.Hunters.RegisterHunter;
 
-public record RegisterHunterCommand(Guid Id, string Name, string StudentNumber);
+public record RegisterHunterCommand(string Id, string Name, string ViaId);

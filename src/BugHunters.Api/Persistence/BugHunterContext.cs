@@ -1,6 +1,10 @@
-﻿namespace BugHunters.Api.Persistence;
+﻿using BugHunters.Api.Entities;
+using Microsoft.EntityFrameworkCore;
 
-public class BugHunterContext
+namespace BugHunters.Api.Persistence;
+
+public class BugHunterContext : DbContext
 {
+    public DbSet<Hunter> Hunters { get; set; }
     
 }

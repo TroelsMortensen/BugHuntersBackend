@@ -7,13 +7,13 @@ namespace BugHunters.Api.Features.Hunters.RegisterHunter;
 public class RegisterHunterEndpoint(ICommandHandler<RegisterHunterCommand> handler)
     : ApiEndpoint.WithRequest<RegisterHunterEndpoint.Request>.WithoutResponse
 {
-    public record Request(string Name, string StudentNumber);
+    public record Request(string Name, string ViaId);
 
     [HttpPost("/hunters/register")]
     public override async Task<ActionResult> HandleAsync([FromBody]Request request)
     {
-        Guid id = Guid.NewGuid();
-        RegisterHunterCommand command = new (id, request.Name, request.StudentNumber);
+        string id = Guid.NewGuid().ToString();
+        RegisterHunterCommand command = new (id, request.Name, request.ViaId);
         Result<None> result = await handler.HandleAsync(command);
         
         return result.IsSuccess 

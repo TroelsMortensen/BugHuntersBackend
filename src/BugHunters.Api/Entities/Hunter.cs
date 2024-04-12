@@ -1,7 +1,5 @@
-﻿namespace BugHunters.Api.Entities;
+﻿using BugHunters.Api.Entities.Values;
 
-public record Hunter(HunterId Id, string Name, StudentNumber Number);
+namespace BugHunters.Api.Entities;
 
-public record HunterId(Guid Value);
-
-public record StudentNumber(string Value);
+public record Hunter(HunterId Id, string Name, ViaId Number);

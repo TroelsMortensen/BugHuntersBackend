@@ -2,7 +2,7 @@
 using BugHunters.Api.Common.HandlerContract;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BugHunters.Api.Features.RegisterHunter;
+namespace BugHunters.Api.Features.Hunters.RegisterHunter;
 
 public class RegisterHunterEndpoint(ICommandHandler<RegisterHunterCommand> handler)
     : ApiEndpoint.WithRequest<RegisterHunterEndpoint.Request>.WithoutResponse

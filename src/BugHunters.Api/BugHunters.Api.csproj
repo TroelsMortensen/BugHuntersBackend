@@ -12,8 +12,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Features\CatchBug\" />
-      <Folder Include="Features\SeeBugCatalogue\" />
+      <Folder Include="Features\Bugs\CatchBug\" />
+      <Folder Include="Features\Hunters\" />
+      <Folder Include="Features\ViewData\SeeBugCatalogue\" />
     </ItemGroup>
 
 </Project>

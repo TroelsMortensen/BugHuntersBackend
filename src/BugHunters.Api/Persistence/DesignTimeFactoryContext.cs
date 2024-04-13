@@ -8,7 +8,7 @@ public class DesignTimeContextFactory : IDesignTimeDbContextFactory<BugHunterCon
     public BugHunterContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<BugHunterContext>();
-        optionsBuilder.UseSqlite(@"Data Source = VEADatabaseProduction.db");
+        optionsBuilder.UseSqlite(@"Data Source = BugHuntersSqliteProduction.db");
         return new BugHunterContext(optionsBuilder.Options);
     }
 }

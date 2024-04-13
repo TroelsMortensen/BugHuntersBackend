@@ -2,4 +2,4 @@
 
 namespace BugHunters.Api.Entities;
 
-public record Hunter(HunterId Id, string Name, ViaId ViaId);
+public record Hunter(HunterId Id, Name Name, ViaId ViaId);

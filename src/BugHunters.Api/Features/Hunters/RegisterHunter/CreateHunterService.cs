@@ -11,12 +11,13 @@ public class CreateHunterService : ICoreService
     {
         Result<HunterId> hunterIdResult = HunterId.FromString(id);
         Result<ViaId> viaIdResult = ViaId.FromString(viaId);
+        Result<Name> nameResult = Name.FromString(name);
         Result<Hunter> result = Result
-            .CombineResultsInto<Hunter>(hunterIdResult, viaIdResult)
+            .CombineResultsInto<Hunter>(hunterIdResult, viaIdResult, nameResult)
             .WithPayloadIfSuccess(
                 () => new Hunter(
                     hunterIdResult.Payload,
-                    name,
+                    nameResult.Payload,
                     viaIdResult.Payload
                 )
             );

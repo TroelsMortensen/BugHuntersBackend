@@ -19,8 +19,8 @@ public class CreateHunterServiceTest
         // Assert
         Assert.True(result.IsSuccess);
         Assert.Equal(id, hunter.Id.Value.ToString());
-        Assert.Equal(name, hunter.Name);
-        Assert.Equal(viaId, hunter.ViaId.Value.ToString());
+        Assert.Equal(name, hunter.Name.Value);
+        Assert.Equal(viaId, hunter.ViaId.Value);
     }
 
 
@@ -32,7 +32,7 @@ public class CreateHunterServiceTest
             Guid.NewGuid().ToString(),
             Guid.NewGuid().ToString()
         ];
-        string[] names = ["John Doe", "Jane Doe", "John Smith"];
+        string[] names = ["John Doe", "Jane Doe", "John Smith", "A", "hfdasjfkhsfjdhkasdfa"];
         string[] viaIds =
         [
             "250312",
@@ -75,7 +75,7 @@ public class CreateHunterServiceTest
             "",
             "invalidGuid"
         ];
-        string[] names = [""];
+        string[] names = ["", "absrhjerdfhjshjadfhjk"];
         string[] viaIds =
         [
             "25031",

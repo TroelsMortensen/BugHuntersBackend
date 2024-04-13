@@ -33,4 +33,6 @@ public record ViaId
 
     private static bool IsSixDigits(string value)
         => value.Length == 6 && value.All(char.IsDigit);
+    
+    private ViaId(){} // EFC
 }

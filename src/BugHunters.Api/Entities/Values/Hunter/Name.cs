@@ -12,4 +12,6 @@ public record Name
             .AssertThat(() => !string.IsNullOrWhiteSpace(value), new ResultError("Hunter.Name", "Name cannot be empty."))
             .AssertThat(() => value.Length <= 20, new ResultError("Hunter.Name", "Name must be less than 20 characters."))
             .WithPayloadIfSuccess(() => new Name(value));
+    
+    private Name(){} // EFC
 }

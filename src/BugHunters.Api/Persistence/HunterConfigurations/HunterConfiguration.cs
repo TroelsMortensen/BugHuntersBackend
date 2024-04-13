@@ -10,7 +10,25 @@ public class HunterConfiguration : IEntityTypeConfiguration<Hunter>
     public void Configure(EntityTypeBuilder<Hunter> builder)
     {
         PkConfig(builder);
+        NameConfig(builder);
+        ViaIdConfig(builder);
     }
+
+    private void ViaIdConfig(EntityTypeBuilder<Hunter> builder)
+        => builder.ComplexProperty<ViaId>(h => h.ViaId,
+            propBuilder =>
+            {
+                propBuilder.Property<string>(v => v.Value)
+                    .HasColumnName("ViaId");
+            });
+
+    private void NameConfig(EntityTypeBuilder<Hunter> builder)
+        => builder.ComplexProperty<Name>(h => h.Name,
+            propBuilder =>
+            {
+                propBuilder.Property<string>(n => n.Value)
+                    .HasColumnName("Name");
+            });
 
     private void PkConfig(EntityTypeBuilder<Hunter> builder)
     {

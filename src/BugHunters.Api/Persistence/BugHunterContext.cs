@@ -3,8 +3,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BugHunters.Api.Persistence;
 
-public class BugHunterContext : DbContext
+public class BugHunterContext(DbContextOptions<BugHunterContext> options) : DbContext(options)
 {
     public DbSet<Hunter> Hunters { get; set; }
     
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(BugHunterContext).Assembly);
+    }
 }

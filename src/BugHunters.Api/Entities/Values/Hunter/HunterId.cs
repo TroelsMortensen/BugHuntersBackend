@@ -11,4 +11,9 @@ public record HunterId
         => Guid.TryParse(value, out _)
             ? new HunterId(Guid.Parse(value))
             : new ResultError("Hunter.Id", "Invalid HunterId format. Must be a valid GUID.");
+
+    public static Result<HunterId> FromGuid(Guid value)
+        => FromString(value.ToString());
+    
+    private HunterId(){} // EFC
 }

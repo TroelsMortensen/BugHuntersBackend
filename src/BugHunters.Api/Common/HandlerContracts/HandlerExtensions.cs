@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace BugHunters.Api.Common.HandlerContract;
+namespace BugHunters.Api.Common.HandlerContracts;
 
 public static class HandlerExtensions
 {

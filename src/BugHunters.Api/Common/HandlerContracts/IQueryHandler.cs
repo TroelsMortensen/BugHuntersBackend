@@ -1,4 +1,4 @@
-﻿namespace BugHunters.Api.Common.HandlerContract;
+﻿namespace BugHunters.Api.Common.HandlerContracts;
 
 public interface IQueryHandler<in TQuery, TAnswer>
 {

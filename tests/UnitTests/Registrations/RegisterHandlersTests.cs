@@ -1,5 +1,5 @@
 ﻿using BugHunters.Api.Common.FunctionalCore;
-using BugHunters.Api.Common.HandlerContract;
+using BugHunters.Api.Common.HandlerContracts;
 using BugHunters.Api.Features.RegisterHunter;
 using BugHunters.Api.Persistence;
 using Microsoft.EntityFrameworkCore;

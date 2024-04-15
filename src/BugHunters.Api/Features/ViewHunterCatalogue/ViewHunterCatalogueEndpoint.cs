@@ -1,5 +1,5 @@
 ﻿using BugHunters.Api.Common.Endpoint;
-using BugHunters.Api.Common.HandlerContract;
+using BugHunters.Api.Common.HandlerContracts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BugHunters.Api.Features.ViewHunterCatalogue;

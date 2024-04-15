@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using BugHunters.Api.Common.HandlerContract;
 
 namespace BugHunters.Api.Common.FunctionalCore;
 

@@ -1,4 +1,4 @@
-﻿using BugHunters.Api.Common.HandlerContract;
+﻿using BugHunters.Api.Common.HandlerContracts;
 using BugHunters.Api.Entities;
 using BugHunters.Api.Persistence;
 

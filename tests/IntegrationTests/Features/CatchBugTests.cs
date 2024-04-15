@@ -27,8 +27,8 @@ public class CatchBugTests
         await using BugHunterContext ctx = waf.Services.CreateScope().ServiceProvider.GetRequiredService<BugHunterContext>();
         BugCatch? bugCatch = await ctx.BugCatches.SingleOrDefaultAsync();
         Assert.NotNull(bugCatch);
-        Assert.Equal(bugId, bugCatch.BugCaught);
-        Assert.Equal(hunterId, bugCatch.CaughtBy);
+        Assert.Equal(bugId, bugCatch.BugId);
+        Assert.Equal(hunterId, bugCatch.HunterId);
     }
 
     private static async Task<Id<Hunter>> InsertHunter(BugHunterWebAppFactory waf)

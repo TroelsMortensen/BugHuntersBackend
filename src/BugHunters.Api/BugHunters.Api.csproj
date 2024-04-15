@@ -22,9 +22,7 @@
     </ItemGroup>
     
     <ItemGroup>
-      <Folder Include="Entities\Values\Bug\" />
       <Folder Include="Features\AddBug\" />
-      <Folder Include="Features\SeeBugCatalogue\" />
     </ItemGroup>
 
 </Project>

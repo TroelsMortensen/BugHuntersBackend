@@ -1,6 +1,4 @@
-﻿using BugHunters.Api.Entities.Values;
-using BugHunters.Api.Entities.Values.Hunter;
-using BugHunters.Api.Entities.Values.StrongId;
+﻿using BugHunters.Api.Entities.Values.Hunter;
 
 namespace BugHunters.Api.Entities;
 
@@ -12,6 +10,8 @@ public record Hunter
     public Id<Hunter> Id { get; init; }
     public Name Name { get; init; }
     public ViaId ViaId { get; init; }
+
+    public IEnumerable<BugCatch> BugCatches { get; set; } = new List<BugCatch>();
 
     private Hunter()
     {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Text.Json;
+using BugHunters.Api.Features.ViewHunterCatalogue;
 
 namespace BugHunters.Api.Common.Result;
 
@@ -83,6 +84,13 @@ public class Result<T> : Result, IFluentResultValidation<T>
     }
 
     public Result<T> ToResult() => this;
+
+    public static Result<T> Failure(ResultError resultError)
+    {
+        Result<T> result = new Result<T>();
+        result.errors.Add(resultError);
+        return result;
+    }
 }
 
 public abstract class Result

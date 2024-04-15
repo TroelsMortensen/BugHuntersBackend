@@ -13,7 +13,7 @@ public class BugCatchConfig : IEntityTypeConfiguration<BugCatch>
 
     private void PkConfig(EntityTypeBuilder<BugCatch> builder)
     {
-        builder.HasKey(bc => new { bc.CaughtBy, bc.BugCaught });
+        builder.HasKey(bc => new { bc.HunterId, BugCaught = bc.BugId });
     }
 }
 

@@ -5,6 +5,7 @@ using BugHunters.Api.Entities.Values.Hunter;
 using BugHunters.Api.Entities.Values.StrongId;
 using BugHunters.Api.Features.CatchBug;
 using BugHunters.Api.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace IntegrationTests.Features;
 
@@ -18,10 +19,16 @@ public class CatchBugTests
         Id<Hunter> hunterId = await InsertHunter(waf);
         HttpClient client = waf.CreateClient();
 
-        CatchBugRequest request = new CatchBugRequest(bugId.Value.ToString(), hunterId.Value.ToString());
+        CatchBugRequest request = new (bugId.Value.ToString(), hunterId.Value.ToString());
 
         HttpResponseMessage httpResponse = await client.PostAsync("/api/catch-bug", JsonContent.Create(request));
         Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
+        
+        await using BugHunterContext ctx = waf.Services.CreateScope().ServiceProvider.GetRequiredService<BugHunterContext>();
+        BugCatch? bugCatch = await ctx.BugCatches.SingleOrDefaultAsync();
+        Assert.NotNull(bugCatch);
+        Assert.Equal(bugId, bugCatch.BugCaught);
+        Assert.Equal(hunterId, bugCatch.CaughtBy);
     }
 
     private async Task<Id<Hunter>> InsertHunter(BugHunterWebAppFactory waf)

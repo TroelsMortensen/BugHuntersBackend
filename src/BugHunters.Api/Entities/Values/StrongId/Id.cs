@@ -16,11 +16,11 @@ public record Id<T>
 
     public static Id<T> FromGuid(Guid val) => new(val);
 
-    public static Result<Id<Entities.Hunter>> FromString(string val)
+    public static Result<Id<T>> FromString(string val)
     {
         if (Guid.TryParse(val, out Guid guid))
         {
-            return new Id<Entities.Hunter>(guid);
+            return new Id<T>(guid);
         }
 
         return new ResultError("Hunter.Id", "Invalid Id format.");

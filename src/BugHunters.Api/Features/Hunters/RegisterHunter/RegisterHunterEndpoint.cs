@@ -9,7 +9,7 @@ public class RegisterHunterEndpoint(ICommandHandler<RegisterHunterCommand> handl
         .WithRequest<RegisterHunterEndpoint.RegisterRequest>
         .WithResponse<RegisterHunterEndpoint.RegisterResponse>
 {
-    [HttpPost("/hunters/register")]
+    [HttpPost("hunters/register")]
     public override async Task<ActionResult<RegisterResponse>> HandleAsync([FromBody] RegisterRequest request)
     {
         string id = Guid.NewGuid().ToString();

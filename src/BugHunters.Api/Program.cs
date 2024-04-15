@@ -1,3 +1,8 @@
+using BugHunters.Api.Common.FunctionalCore;
+using BugHunters.Api.Common.HandlerContract;
+using BugHunters.Api.Persistence;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -7,6 +12,14 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.RegisterCoreServices();
+builder.Services.RegisterCommandHandlers();
+
+builder.Services.AddDbContext<BugHunterContext>(options =>
+{
+    options.UseSqlite(@"Data Source = BugHunters.db");
+});
 
 var app = builder.Build();
 app.MapControllers();
@@ -19,11 +32,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
 
 app.Run();

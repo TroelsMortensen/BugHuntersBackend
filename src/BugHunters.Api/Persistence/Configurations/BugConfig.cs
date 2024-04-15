@@ -3,9 +3,9 @@ using BugHunters.Api.Entities.Values;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace BugHunters.Api.Persistence.BugConfigurations;
+namespace BugHunters.Api.Persistence.Configurations;
 
-public class BugEfcConfig :  IEntityTypeConfiguration<Bug>
+public class BugConfig :  IEntityTypeConfiguration<Bug>
 {
     public void Configure(EntityTypeBuilder<Bug> builder)
     {

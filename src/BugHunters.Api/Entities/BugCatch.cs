@@ -1,6 +1,5 @@
-﻿namespace BugHunters.Api.Entities;
+﻿using BugHunters.Api.Entities.Values;
 
-public record BugCatch
-{
-    
-}
+namespace BugHunters.Api.Entities;
+
+public record BugCatch(Id<Hunter> CaughtBy, Id<Bug> BugCaught, DateTime TimeCaught);

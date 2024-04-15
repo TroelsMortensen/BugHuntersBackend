@@ -4,9 +4,9 @@ using BugHunters.Api.Entities.Values.Hunter;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace BugHunters.Api.Persistence.HunterConfigurations;
+namespace BugHunters.Api.Persistence.Configurations;
 
-public class HunterEfcConfig : IEntityTypeConfiguration<Hunter>
+public class HunterConfig : IEntityTypeConfiguration<Hunter>
 {
     public void Configure(EntityTypeBuilder<Hunter> builder)
     {

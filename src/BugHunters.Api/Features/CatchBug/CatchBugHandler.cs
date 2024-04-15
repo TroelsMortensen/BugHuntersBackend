@@ -12,7 +12,7 @@ public class CatchBugHandler(BugHunterContext context) : ICommandHandler<CatchBu
         Result<Id<Hunter>> hunterId = Id<Hunter>.FromString(command.HunterId);
         Result<Id<Bug>> bugId = Id<Bug>.FromString(command.BugId);
         Result<None> combined = Result.CombineResults(hunterId, bugId);
-        
+
         if (combined.IsFailure)
         {
             return combined;
@@ -23,17 +23,26 @@ public class CatchBugHandler(BugHunterContext context) : ICommandHandler<CatchBu
         {
             return new ResultError("Hunter.Id", $"Hunter with id {command.HunterId} not found");
         }
-        
+
         Bug? bug = await context.Bugs.SingleOrDefaultAsync(b => b.Id == bugId.Payload);
         if (bug is null)
         {
             return new ResultError("Bug.Id", $"Bug with id {command.BugId} not found");
         }
-        
-        BugCatch bugCatch = new (hunter.Id, bug.Id, DateTime.UtcNow);
+
+        BugCatch? existingCatch = await context
+            .BugCatches
+            .SingleOrDefaultAsync(bc => bc.BugId == bugId.Payload
+                                        && bc.HunterId == hunterId.Payload);
+        if (existingCatch is not null)
+        {
+            return new ResultError("BugCatchExists", "You have already caught this bug.");
+        }
+
+        BugCatch bugCatch = new(hunter.Id, bug.Id, DateTime.UtcNow);
         await context.BugCatches.AddAsync(bugCatch);
         await context.SaveChangesAsync();
-        
+
         return Result.Success();
     }
 }

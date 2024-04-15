@@ -1,6 +1,7 @@
 ﻿using BugHunters.Api.Entities;
 using BugHunters.Api.Entities.Values;
 using BugHunters.Api.Entities.Values.Hunter;
+using BugHunters.Api.Entities.Values.StrongId;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;

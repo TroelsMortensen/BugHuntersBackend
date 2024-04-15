@@ -1,5 +1,6 @@
 ﻿using BugHunters.Api.Entities.Values;
 using BugHunters.Api.Entities.Values.Hunter;
+using BugHunters.Api.Entities.Values.StrongId;
 
 namespace BugHunters.Api.Entities;
 

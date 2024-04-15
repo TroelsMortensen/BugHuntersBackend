@@ -1,4 +1,4 @@
-﻿namespace BugHunters.Api.Entities.Values;
+﻿namespace BugHunters.Api.Entities.Values.StrongId;
 
 public record Id<T>
 {

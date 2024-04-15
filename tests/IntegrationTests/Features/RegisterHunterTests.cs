@@ -1,7 +1,8 @@
 ﻿using System.Net;
 using BugHunters.Api.Entities;
 using BugHunters.Api.Entities.Values;
-using BugHunters.Api.Features.Hunters.RegisterHunter;
+using BugHunters.Api.Entities.Values.StrongId;
+using BugHunters.Api.Features.RegisterHunter;
 using BugHunters.Api.Persistence;
 using Microsoft.AspNetCore.Mvc.Testing;
 
@@ -19,7 +20,7 @@ public class RegisterHunterTests
         RegisterHunterEndpoint.RegisterRequest content = new("Troels", "trmo");
         
         // Act
-        HttpResponseMessage httpResponse = await client.PostAsync("/api/hunters/register", JsonContent.Create(content));
+        HttpResponseMessage httpResponse = await client.PostAsync("/api/register-hunter", JsonContent.Create(content));
         
         Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
         

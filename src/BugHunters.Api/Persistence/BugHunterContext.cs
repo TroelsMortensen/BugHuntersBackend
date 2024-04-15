@@ -1,5 +1,6 @@
 ﻿using BugHunters.Api.Entities;
 using BugHunters.Api.Entities.Values;
+using BugHunters.Api.Entities.Values.StrongId;
 using BugHunters.Api.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
 

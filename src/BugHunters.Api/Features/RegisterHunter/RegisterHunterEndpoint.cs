@@ -5,11 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace BugHunters.Api.Features.RegisterHunter;
 
 public class RegisterHunterEndpoint(ICommandHandler<RegisterHunterCommand> handler)
-    : ApiEndpoint
-        .WithRequest<RegisterHunterEndpoint.RegisterRequest>
-        .WithResponse<RegisterHunterEndpoint.RegisterResponse>
+    : ApiEndpoint.WithRequest<RegisterHunterEndpoint.RegisterRequest>.WithResponse<RegisterHunterEndpoint.RegisterResponse>
 {
-    [HttpPost("hunters/register")]
+    [HttpPost("register-hunter")]
     public override async Task<ActionResult<RegisterResponse>> HandleAsync([FromBody] RegisterRequest request)
     {
         string id = Guid.NewGuid().ToString();

@@ -1,6 +1,5 @@
 ﻿using BugHunters.Api.Common.FunctionalCore;
 using BugHunters.Api.Entities;
-using BugHunters.Api.Entities.Values;
 using BugHunters.Api.Entities.Values.Hunter;
 
 namespace BugHunters.Api.Features.RegisterHunter;

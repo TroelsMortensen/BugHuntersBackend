@@ -101,7 +101,7 @@ public abstract class Result
     // public static Result<T> Failure<T>(string errorCode, string message)
     //     => new(new ResultError(errorCode, message));
 
-    public static Result<None> CombineResultsInto(params Result[] results)
+    public static Result<None> CombineResults(params Result[] results)
     {
         Result<None> result = results.SelectMany(r => r.Errors).ToList();
         return result.WithPayloadIfSuccess(() => new None());

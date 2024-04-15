@@ -11,7 +11,7 @@ public class CatchBugHandler(BugHunterContext context) : ICommandHandler<CatchBu
     {
         Result<Id<Hunter>> hunterId = Id<Hunter>.FromString(command.HunterId);
         Result<Id<Bug>> bugId = Id<Bug>.FromString(command.BugId);
-        Result<None> combined = Result.CombineResultsInto(hunterId, bugId);
+        Result<None> combined = Result.CombineResults(hunterId, bugId);
         
         if (combined.IsFailure)
         {

@@ -16,10 +16,6 @@ public class BugConfig : IEntityTypeConfiguration<Bug>
     private void PkConfig(EntityTypeBuilder<Bug> builder)
     {
         builder.HasKey(h => h.Id);
-        // builder.Property(h => h.Id).HasConversion(
-        //     id => id.Value,
-        //     dbValue => Id<Bug>.FromGuid(dbValue)
-        // );
     }
 }
 

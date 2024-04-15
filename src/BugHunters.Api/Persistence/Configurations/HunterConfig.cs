@@ -35,10 +35,6 @@ public class HunterConfig : IEntityTypeConfiguration<Hunter>
     private void PkConfig(EntityTypeBuilder<Hunter> builder)
     {
         builder.HasKey(h => h.Id);
-        // builder.Property(h => h.Id).HasConversion(
-        //     id => id.Value,
-        //     dbValue => Id<Hunter>.FromGuid(dbValue)
-        // );
     }
 }
 

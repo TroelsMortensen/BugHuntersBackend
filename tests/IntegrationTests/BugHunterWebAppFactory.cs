@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace IntegrationTests;
 
-internal class WebAppFactory : WebApplicationFactory<Program>
+internal class BugHunterWebAppFactory : WebApplicationFactory<Program>
 {
     private IServiceCollection serviceCollection = null!;
 
@@ -27,15 +27,14 @@ internal class WebAppFactory : WebApplicationFactory<Program>
         });
     }
 
-    private void SetupCleanDatabase(IServiceCollection services)
+    private static void SetupCleanDatabase(IServiceCollection services)
     {
         BugHunterContext ctx = services.BuildServiceProvider().GetService<BugHunterContext>()!;
         ctx.Database.EnsureDeleted();
         ctx.Database.EnsureCreated();
-        // could seed database here?
     }
 
-    private string GetConnectionString()
+    private static string GetConnectionString()
     {
         string testDbName = "Test" + Guid.NewGuid() + ".db";
         return "Data Source = " + testDbName;

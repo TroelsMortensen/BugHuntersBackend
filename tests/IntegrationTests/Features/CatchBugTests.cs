@@ -19,11 +19,11 @@ public class CatchBugTests
         Id<Hunter> hunterId = await InsertHunter(waf);
         HttpClient client = waf.CreateClient();
 
-        CatchBugRequest request = new (bugId.Value.ToString(), hunterId.Value.ToString());
+        CatchBugRequest request = new(bugId.Value.ToString(), hunterId.Value.ToString());
 
         HttpResponseMessage httpResponse = await client.PostAsync("/api/catch-bug", JsonContent.Create(request));
         Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
-        
+
         await using BugHunterContext ctx = waf.Services.CreateScope().ServiceProvider.GetRequiredService<BugHunterContext>();
         BugCatch? bugCatch = await ctx.BugCatches.SingleOrDefaultAsync();
         Assert.NotNull(bugCatch);
@@ -31,10 +31,10 @@ public class CatchBugTests
         Assert.Equal(hunterId, bugCatch.CaughtBy);
     }
 
-    private async Task<Id<Hunter>> InsertHunter(BugHunterWebAppFactory waf)
+    private static async Task<Id<Hunter>> InsertHunter(BugHunterWebAppFactory waf)
     {
         Id<Hunter> hunterId = Id<Hunter>.New();
-        Hunter hunter = new Hunter(
+        Hunter hunter = new(
             hunterId,
             Name.FromString("Troels").EnsureValidResult().Payload,
             ViaId.FromString("trmo").EnsureValidResult().Payload
@@ -48,7 +48,7 @@ public class CatchBugTests
     private static async Task<Id<Bug>> InsertBug(BugHunterWebAppFactory waf)
     {
         Id<Bug> bugId = Id<Bug>.New();
-        Bug bug = new Bug(bugId, "TestBug", "This is a test bug", "Placed right here", new byte[1]);
+        Bug bug = new(bugId, "TestBug", "This is a test bug", "Placed right here", new byte[1]);
         await using BugHunterContext ctx = waf.Services.CreateScope().ServiceProvider.GetRequiredService<BugHunterContext>();
         await ctx.Bugs.AddAsync(bug);
         await ctx.SaveChangesAsync();

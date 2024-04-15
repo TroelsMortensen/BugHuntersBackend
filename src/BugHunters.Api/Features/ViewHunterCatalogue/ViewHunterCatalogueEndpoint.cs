@@ -12,6 +12,7 @@ public class ViewHunterCatalogueEndpoint(IQueryHandler<ViewCatalogueQuery, ViewC
     [HttpGet("catalogue/{HunterId}")]
     public override async Task<ActionResult<ViewCatalogueAnswer>> HandleAsync([FromRoute] ViewCatalogueRequest request)
     {
+        Console.WriteLine("Request received: " + request.HunterId);
         Result<ViewCatalogueAnswer> result = await handler.HandleAsync(new ViewCatalogueQuery(request.HunterId));
         if (result.IsFailure)
         {

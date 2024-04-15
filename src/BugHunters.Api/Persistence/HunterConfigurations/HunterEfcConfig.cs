@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BugHunters.Api.Persistence.HunterConfigurations;
 
-public class HunterConfiguration : IEntityTypeConfiguration<Hunter>
+public class HunterEfcConfig : IEntityTypeConfiguration<Hunter>
 {
     public void Configure(EntityTypeBuilder<Hunter> builder)
     {

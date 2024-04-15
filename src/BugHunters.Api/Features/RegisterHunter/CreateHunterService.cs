@@ -3,7 +3,7 @@ using BugHunters.Api.Entities;
 using BugHunters.Api.Entities.Values;
 using BugHunters.Api.Entities.Values.Hunter;
 
-namespace BugHunters.Api.Features.Hunters.RegisterHunter;
+namespace BugHunters.Api.Features.RegisterHunter;
 
 public class CreateHunterService : ICoreService
 {

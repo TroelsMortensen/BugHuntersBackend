@@ -2,7 +2,7 @@
 using BugHunters.Api.Entities;
 using BugHunters.Api.Persistence;
 
-namespace BugHunters.Api.Features.Hunters.RegisterHunter;
+namespace BugHunters.Api.Features.RegisterHunter;
 
 public class RegisterHunterHandler(BugHunterContext context, CreateHunterService service) : ICommandHandler<RegisterHunterCommand>
 {

@@ -1,5 +1,5 @@
 ﻿using BugHunters.Api.Common.FunctionalCore;
-using BugHunters.Api.Features.Hunters.RegisterHunter;
+using BugHunters.Api.Features.RegisterHunter;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace UnitTests.Registrations;

@@ -1,6 +1,6 @@
 ﻿using BugHunters.Api.Common.Result;
 using BugHunters.Api.Entities;
-using BugHunters.Api.Features.Hunters.RegisterHunter;
+using BugHunters.Api.Features.RegisterHunter;
 
 namespace UnitTests.Services;
 

@@ -21,6 +21,8 @@ builder.Services.AddDbContext<BugHunterContext>(options =>
     options.UseSqlite(@"Data Source = BugHunters.db");
 });
 
+// TODO ensure created, and migrate?
+
 var app = builder.Build();
 app.MapControllers();
 

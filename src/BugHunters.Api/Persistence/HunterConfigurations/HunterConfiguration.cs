@@ -1,4 +1,5 @@
 ﻿using BugHunters.Api.Entities;
+using BugHunters.Api.Entities.Values;
 using BugHunters.Api.Entities.Values.Hunter;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -35,7 +36,7 @@ public class HunterConfiguration : IEntityTypeConfiguration<Hunter>
         builder.HasKey(h => h.Id);
         builder.Property(h => h.Id).HasConversion(
             id => id.Value,
-            dbValue => HunterId.FromGuid(dbValue).Payload
+            dbValue => Id<Hunter>.FromGuid(dbValue)
         );
     }
 }

@@ -1,13 +1,14 @@
-﻿using BugHunters.Api.Entities.Values.Hunter;
+﻿using BugHunters.Api.Entities.Values;
+using BugHunters.Api.Entities.Values.Hunter;
 
 namespace BugHunters.Api.Entities;
 
 public record Hunter
 {
-    public Hunter(HunterId id, Name name, ViaId viaId)
+    public Hunter(Id<Hunter> id, Name name, ViaId viaId)
         => (Id, Name, ViaId) = (id, name, viaId);
 
-    public HunterId Id { get; init; }
+    public Id<Hunter> Id { get; init; }
     public Name Name { get; init; }
     public ViaId ViaId { get; init; }
 

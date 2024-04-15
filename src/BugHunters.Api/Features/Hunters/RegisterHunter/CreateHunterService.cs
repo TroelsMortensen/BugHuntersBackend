@@ -9,7 +9,7 @@ public class CreateHunterService : ICoreService
 {
     public Result<Hunter> CreateHunter(string id, string name, string viaId)
     {
-        Result<HunterId> hunterIdResult = HunterId.FromString(id);
+        Result<Id<Hunter>> hunterIdResult = Id<Hunter>.FromString(id);
         Result<ViaId> viaIdResult = ViaId.FromString(viaId);
         Result<Name> nameResult = Name.FromString(name);
         Result<Hunter> result = Result

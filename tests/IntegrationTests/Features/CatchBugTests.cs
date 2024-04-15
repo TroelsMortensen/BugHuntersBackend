@@ -31,6 +31,24 @@ public class CatchBugTests
         Assert.Equal(hunterId, bugCatch.HunterId);
     }
 
+    [Fact]
+    public async Task CatchBug_NoHunterExists()
+    {
+        
+    }
+    
+    [Fact]
+    public async Task CatchBug_NoBugExists()
+    {
+        
+    }
+
+    [Fact]
+    public async Task CatchBug_BugAlreadyCaught()
+    {
+        
+    }
+    
     private static async Task<Id<Hunter>> InsertHunter(BugHunterWebAppFactory waf)
     {
         Id<Hunter> hunterId = Id<Hunter>.New();

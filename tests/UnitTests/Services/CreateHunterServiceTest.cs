@@ -19,7 +19,7 @@ public class CreateHunterServiceTest
         // Assert
         Assert.True(result.IsSuccess);
         Assert.Equal(id, hunter.Id.Value.ToString());
-        Assert.Equal(name, hunter.Name.Value);
+        Assert.Equal(name, hunter.DisplayName.Value);
         Assert.Equal(viaId, hunter.ViaId.Value);
     }
 

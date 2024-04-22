@@ -10,7 +10,7 @@ public class CreateHunterService : ICoreService
     {
         Result<Id<Hunter>> hunterIdResult = Id<Hunter>.FromString(id);
         Result<ViaId> viaIdResult = ViaId.FromString(viaId);
-        Result<Name> nameResult = Name.FromString(name);
+        Result<DisplayName> nameResult = DisplayName.FromString(name);
         Result<Hunter> result = Result
             .CombineResultsInto<Hunter>(hunterIdResult, viaIdResult, nameResult)
             .WithPayloadIfSuccess(

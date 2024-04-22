@@ -26,11 +26,11 @@ public class HunterConfig : IEntityTypeConfiguration<Hunter>
             });
 
     private void NameConfig(EntityTypeBuilder<Hunter> builder)
-        => builder.ComplexProperty<Name>(h => h.Name,
+        => builder.ComplexProperty<DisplayName>(h => h.DisplayName,
             propBuilder =>
             {
                 propBuilder.Property<string>(n => n.Value)
-                    .HasColumnName("Name");
+                    .HasColumnName("DisplayName");
             });
 
     private void PkConfig(EntityTypeBuilder<Hunter> builder)

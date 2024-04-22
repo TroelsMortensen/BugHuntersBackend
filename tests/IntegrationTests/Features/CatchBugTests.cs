@@ -54,7 +54,7 @@ public class CatchBugTests
         Id<Hunter> hunterId = Id<Hunter>.New();
         Hunter hunter = new(
             hunterId,
-            Name.FromString("Troels").EnsureValidResult().Payload,
+            DisplayName.FromString("Troels").EnsureValidResult().Payload,
             ViaId.FromString("trmo").EnsureValidResult().Payload
         );
         await using BugHunterContext ctx = waf.Services.CreateScope().ServiceProvider.GetRequiredService<BugHunterContext>();

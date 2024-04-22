@@ -14,6 +14,11 @@ public class BugHunterContext(DbContextOptions<BugHunterContext> options) : DbCo
 
     public DbSet<BugCatch> BugCatches => Set<BugCatch>();
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(BugHunterContext).Assembly);

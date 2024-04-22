@@ -31,6 +31,8 @@ public class Result<T> : Result, IFluentResultValidation<T>
 
     public bool IsSuccess => !IsFailure;
 
+    public Result<TOther> ToOther<TOther>()
+        => Errors.ToList();
 
     public static implicit operator Result<T>(T value)
         => new(value);

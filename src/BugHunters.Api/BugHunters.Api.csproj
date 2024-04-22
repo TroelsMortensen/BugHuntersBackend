@@ -23,7 +23,6 @@
     
     <ItemGroup>
       <Folder Include="Features\AddBug\" />
-      <Folder Include="Features\ChangeDisplayName\" />
     </ItemGroup>
 
 </Project>

@@ -6,7 +6,7 @@ namespace BugHunters.Api.Features.ViewHunterProfile;
 public class ViewHunterProfileEndpoint
 : ApiEndpoint.WithoutRequest.WithResponse<StringResponse>
 {
-    [HttpGet("hunterprofile/{HunterId}")]
+    [HttpGet("hunter/{HunterId}/profile")]
     public override async Task<ActionResult<StringResponse>> HandleAsync()
     {
         Console.WriteLine("Request received: " + DateTime.Now);

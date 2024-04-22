@@ -9,7 +9,7 @@ public class ViewHunterCatalogueEndpoint(IQueryHandler<ViewCatalogueQuery, ViewC
         .WithRequest<ViewCatalogueRequest>
         .WithResponse<ViewCatalogueAnswer>
 {
-    [HttpGet("catalogue/{HunterId}")]
+    [HttpGet("hunter/{HunterId}/catalogue")]
     public override async Task<ActionResult<ViewCatalogueAnswer>> HandleAsync([FromRoute] ViewCatalogueRequest request)
     {
         Console.WriteLine("Request received: " + request.HunterId);

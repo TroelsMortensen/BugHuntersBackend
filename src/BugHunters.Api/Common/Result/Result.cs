@@ -19,8 +19,8 @@ public class Result<T> : Result, IFluentResultValidation<T>
 
     private void AssertAccessible()
     {
-        if (Errors.Any()) throw new OperationResultHasErrorsException();
-        if (ValueIsDefault()) throw new OperationResultEmptyValueException();
+        if (Errors.Any()) throw new OperationResultHasErrors();
+        if (ValueIsDefault()) throw new PayloadIsEmpty();
         if (new None().Equals(payload)) throw new OperationResultContainsNone();
     }
 
@@ -128,9 +128,9 @@ public abstract class Result
         => new Result<T>();
 }
 
-public class OperationResultHasErrorsException() : Exception("Cannot access result value, if the result has errors");
+public class OperationResultHasErrors() : Exception("Cannot access result value, if the result has errors");
 
-public class OperationResultEmptyValueException() : Exception("Result value not set");
+public class PayloadIsEmpty() : Exception("Result value not set");
 
 public class OperationResultContainsNone() : Exception("Result contains none");
 

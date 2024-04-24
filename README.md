@@ -36,4 +36,5 @@ I saw this slightly different approach to organizing the unit tests, which I thi
       * GivenInvalid... (method)
       * GivenInvalid... (method)
 
-I have not yet concluded, whether I like the approach, but will try to stick to it for now.
+I have not yet concluded, whether I like the approach, but will try to stick to it for now.\
+This may work better if you have a class with multiple methods to test, like some collection. The example was of a stack. Most of my classes just have one method, so this organization may be overkill in most cases.

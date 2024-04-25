@@ -3,7 +3,7 @@ using BugHunters.Api.Entities;
 using BugHunters.Api.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace BugHunters.Api.Features.ViewHunterCatalogue;
+namespace BugHunters.Api.Features.ViewHuntersBugCatalogue;
 
 public class ViewCatalogueHandler(BugHunterContext context) : IQueryHandler<ViewCatalogueQuery, ViewCatalogueAnswer>
 {

@@ -1,4 +1,4 @@
-﻿namespace BugHunters.Api.Features.ViewHunterCatalogue;
+﻿namespace BugHunters.Api.Features.ViewHuntersBugCatalogue;
 
 public record ViewCatalogueQuery(string HunterId);
 

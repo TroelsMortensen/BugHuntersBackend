@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using System.Text.Json;
-using BugHunters.Api.Features.ViewHunterCatalogue;
 
 namespace BugHunters.Api.Common.Result;
 

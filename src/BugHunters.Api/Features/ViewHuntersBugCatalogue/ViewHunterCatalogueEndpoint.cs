@@ -2,7 +2,7 @@
 using BugHunters.Api.Common.HandlerContracts;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BugHunters.Api.Features.ViewHunterCatalogue;
+namespace BugHunters.Api.Features.ViewHuntersBugCatalogue;
 
 public class ViewHunterCatalogueEndpoint(IQueryHandler<ViewCatalogueQuery, ViewCatalogueAnswer> handler)
     : ApiEndpoint

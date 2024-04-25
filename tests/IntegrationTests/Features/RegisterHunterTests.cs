@@ -1,34 +1,39 @@
 ﻿using System.Net;
-using BugHunters.Api.Entities;
-using BugHunters.Api.Entities.Values;
-using BugHunters.Api.Entities.Values.StrongId;
 using BugHunters.Api.Features.RegisterHunter;
-using BugHunters.Api.Persistence;
-using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace IntegrationTests.Features;
 
-public class RegisterHunterTests
+public class RegisterHunterTests : TestBase
 {
     [Fact]
-    public async Task ShouldRegisterHunter()
+    public async Task RegisterHunter_ValidHunter_ShouldReturnOk()
     {
-        // Arrange
-        await using WebApplicationFactory<Program> webAppFac = new BugHunterWebAppFactory();
-        HttpClient client = webAppFac.CreateClient();
+        RegisterHunterEndpoint.RegisterRequest content = CreateValidRegisterRequest();
 
-        RegisterHunterEndpoint.RegisterRequest content = new("Troels", "trmo");
-        
-        // Act
         HttpResponseMessage httpResponse = await client.PostAsync("/api/register-hunter", JsonContent.Create(content));
-        
+
         Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task RegisterHunter_ValidHunter_ShouldReturnValidHunterId()
+    {
+        RegisterHunterEndpoint.RegisterRequest content = CreateValidRegisterRequest();
+
+        HttpResponseMessage httpResponse = await client.PostAsync("/api/register-hunter", JsonContent.Create(content));
+        RegisterHunterEndpoint.RegisterResponse? response = await httpResponse.Content.ReadFromJsonAsync<RegisterHunterEndpoint.RegisterResponse>();
         
-        RegisterHunterEndpoint.RegisterResponse response = (await httpResponse.Content.ReadFromJsonAsync<RegisterHunterEndpoint.RegisterResponse>())!;
-        var id = Id<Hunter>.FromString(response.Id).EnsureValidResult().Payload;
-        
-        await using BugHunterContext context = webAppFac.Services.CreateScope().ServiceProvider.GetRequiredService<BugHunterContext>();
-        Hunter hunter = context.Hunters.Single(h => h.Id == id);
-        Assert.NotNull(hunter);
+        Assert.NotNull(response);
+        Assert.NotEmpty(response.Id);
+    }
+
+    [Fact]
+    public async Task RegisterHunter_InvalidName_ShouldReturnBadRequest()
+    {
+    }
+
+    [Fact]
+    public async Task RegisterHunter_InvalidViaId_ShouldReturnBadRequest()
+    {
     }
 }

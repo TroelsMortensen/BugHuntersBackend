@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using BugHunters.Api.Entities;
-using BugHunters.Api.Entities.Values;
 using BugHunters.Api.Entities.Values.Hunter;
 using BugHunters.Api.Entities.Values.StrongId;
 using BugHunters.Api.Features.CatchBug;
@@ -12,11 +11,11 @@ namespace IntegrationTests.Features;
 public class CatchBugTests
 {
     [Fact]
-    public async Task ShouldCatchBug()
+    public async Task CatchBug_ValidHunterAndBug_ShouldReturnOk()
     {
         await using BugHunterWebAppFactory waf = new();
-        Id<Bug> bugId = await InsertBug(waf);
-        Id<Hunter> hunterId = await InsertHunter(waf);
+        Id<Bug> bugId = await AddValidBug(waf);
+        Id<Hunter> hunterId = await AddValidHunter(waf);
         HttpClient client = waf.CreateClient();
 
         CatchBugRequest request = new(bugId.Value.ToString(), hunterId.Value.ToString());
@@ -32,24 +31,24 @@ public class CatchBugTests
     }
 
     [Fact]
-    public async Task CatchBug_NoHunterExists()
+    public async Task CatchBug_HunterDoesNotExist_ShouldReturnBadRequest()
     {
         
     }
     
     [Fact]
-    public async Task CatchBug_NoBugExists()
+    public async Task CatchBug_BugDoesNotExist_ShouldReturnBadRequest()
     {
         
     }
 
     [Fact]
-    public async Task CatchBug_BugAlreadyCaught()
+    public async Task CatchBug_BugIsAlreadyCaught_ShouldReturnBadRequest()
     {
         
     }
     
-    private static async Task<Id<Hunter>> InsertHunter(BugHunterWebAppFactory waf)
+    private static async Task<Id<Hunter>> AddValidHunter(BugHunterWebAppFactory waf)
     {
         Id<Hunter> hunterId = Id<Hunter>.New();
         Hunter hunter = new(
@@ -63,10 +62,10 @@ public class CatchBugTests
         return hunterId;
     }
 
-    private static async Task<Id<Bug>> InsertBug(BugHunterWebAppFactory waf)
+    private static async Task<Id<Bug>> AddValidBug(BugHunterWebAppFactory waf)
     {
         Id<Bug> bugId = Id<Bug>.New();
-        Bug bug = new(bugId, "TestBug", "This is a test bug", "Placed right here", new byte[1]);
+        Bug bug = new(bugId, "TestBug", "This is a test bug", "Placed nowhere", new byte[1]);
         await using BugHunterContext ctx = waf.Services.CreateScope().ServiceProvider.GetRequiredService<BugHunterContext>();
         await ctx.Bugs.AddAsync(bug);
         await ctx.SaveChangesAsync();

@@ -35,14 +35,26 @@ public static class ResultExt
     public static Result<None> StartValidation() =>
         None;
 
-    public static Result<T> AssertThat<T>(this Result<T> result, Func<bool> predicate, ResultError error) =>
-        result switch
-        {
-            Failure<T> failure when !predicate() => Failure<T>(failure.Errors.Append(error).ToArray()),
-            _ when !predicate() => Failure<T>(error),
-            _ when predicate() => result,
-            _ => throw new ArgumentException("Unknown type of result.")
-        };
+    public static Result<None> AssertThat(this Result<None> result, Func<Result<None>> func) =>
+        new List<Result<None>>
+            {
+                result, func()
+            }
+            .Merge();
+
+    private static Result<None> Merge(this IEnumerable<Result<None>> all) =>
+        all.SelectMany(result =>
+                result switch
+                {
+                    Failure<None> failure => failure.Errors,
+                    _ => Array.Empty<ResultError>()
+                })
+            .ToSingleResult();
+
+    private static Result<None> ToSingleResult(this IEnumerable<ResultError> errors) =>
+        errors.Any()
+            ? Failure<None>(errors.ToArray())
+            : Success();
 
     public static Result<T> WithPayloadIfSuccess<T>(this Result<None> result, Func<T> payload) =>
         result switch

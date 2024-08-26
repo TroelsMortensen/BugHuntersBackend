@@ -38,11 +38,12 @@ public static class ResultExt
     public static Result<T> AssertThat<T>(this Result<T> result, Func<bool> predicate, ResultError error) =>
         result switch
         {
-            Success<T> => result,
-            Failure<T> failure => Failure<T>(failure.Errors.Append(error).ToArray()),
+            Failure<T> failure when !predicate() => Failure<T>(failure.Errors.Append(error).ToArray()),
+            _ when !predicate() => Failure<T>(error),
+            _ when predicate() => result,
             _ => throw new ArgumentException("Unknown type of result.")
         };
-    
+
     public static Result<T> WithPayloadIfSuccess<T>(this Result<None> result, Func<T> payload) =>
         result switch
         {

@@ -127,6 +127,8 @@ public abstract class Result
         => new Result<T>();
 }
 
+public class Success<T>(T Value) : Result<T>(Value);
+
 public class OperationResultHasErrors() : Exception("Cannot access result value, if the result has errors");
 
 public class PayloadIsEmpty() : Exception("Result value not set");

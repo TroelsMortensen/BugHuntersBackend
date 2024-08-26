@@ -11,19 +11,26 @@ public record DisplayName
 
     public static Result<DisplayName> FromString(string value) =>
         StartValidation()
-            .AssertThat(() => !IsEmpty(value), new ResultError("Hunter.Name", "Name cannot be empty."))
-            .AssertThat(() => IsBelowMaxLength(value), new ResultError("Hunter.Name", "Name must be less than 20 characters."))
-            .AssertThat(() => IsAboveMinLength(value), new ResultError("Hunter.Name", "Name must be more than 2 characters."))
+            .AssertThat(IsBelowMaxLength(value))
+            .AssertThat(IsAboveMinLength(value))
+            .AssertThat(IsNotEmpty(value))
             .WithPayloadIfSuccess(() => new DisplayName(value));
 
-    private static bool IsAboveMinLength(string value) =>
-        value.Length >= 2;
+    private static Func<Result<None>> IsBelowMaxLength(string value) =>
+        () => value.Length <= 20
+            ? Success()
+            : new ResultError("Hunter.Name", "Name must be less than 20 characters.");
 
-    private static bool IsEmpty(string value) =>
-        !string.IsNullOrWhiteSpace(value);
+    private static Func<Result<None>> IsAboveMinLength(string value) =>
+        () => value.Length >= 2
+            ? Success()
+            : new ResultError("Hunter.Name", "Name must be more than 2 characters.");
 
-    private static bool IsBelowMaxLength(string value) =>
-        value.Length <= 20;
+    private static Func<Result<None>> IsNotEmpty(string value) =>
+        () => !string.IsNullOrWhiteSpace(value)
+            ? Success()
+            : new ResultError("Hunter.Name", "Name cannot be empty.");
+
 
     private DisplayName()
     {

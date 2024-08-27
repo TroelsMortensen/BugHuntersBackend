@@ -35,5 +35,5 @@ public class RegisterHunterEndpoint(BugHunterContext context)
 
     public record RegisterRequest(string Name, string ViaId);
 
-    public record RegisterResponse(string HunterId, string HunterName, string ViaId);
+    private record RegisterResponse(string HunterId, string HunterName, string ViaId);
 }

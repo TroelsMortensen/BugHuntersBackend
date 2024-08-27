@@ -6,10 +6,13 @@ namespace IntegrationTests.Features;
 
 public class RegisterHunterTests : TestBase
 {
+    
+    private record RegisterRequestCopy(string Name, string ViaId);
+
     [Fact]
     public async Task RegisterHunter_ValidHunter_ShouldReturnOk()
     {
-        RegisterHunterEndpoint.RegisterRequest content = CreateValidRegisterRequest();
+        RegisterRequestCopy content = CreateValidRegisterRequest();
 
         HttpResponseMessage httpResponse = await client.PostAsync("/api/register-hunter", JsonContent.Create(content));
 
@@ -19,7 +22,7 @@ public class RegisterHunterTests : TestBase
     [Fact]
     public async Task RegisterHunter_ValidHunter_ShouldReturnValidHunterId()
     {
-        RegisterHunterEndpoint.RegisterRequest content = CreateValidRegisterRequest();
+        RegisterRequestCopy content = CreateValidRegisterRequest();
 
         HttpResponseMessage httpResponse = await client.PostAsync("/api/register-hunter", JsonContent.Create(content));
         RegisterResponseCopy? response =
@@ -35,7 +38,7 @@ public class RegisterHunterTests : TestBase
     [Fact]
     public async Task RegisterHunter_InvalidName_ShouldReturnBadRequest()
     {
-        RegisterHunterEndpoint.RegisterRequest content = new("", "trmo");
+        RegisterRequestCopy content = new("", "trmo");
 
         HttpResponseMessage httpResponse = await client.PostAsync("/api/register-hunter", JsonContent.Create(content));
 
@@ -45,7 +48,7 @@ public class RegisterHunterTests : TestBase
     [Fact]
     public async Task RegisterHunter_InvalidViaId_ShouldReturnBadRequest()
     {
-        RegisterHunterEndpoint.RegisterRequest content = new("John Doe", "tr");
+        RegisterRequestCopy content = new("John Doe", "tr");
 
         HttpResponseMessage httpResponse = await client.PostAsync("/api/register-hunter", JsonContent.Create(content));
 
@@ -58,7 +61,7 @@ public class RegisterHunterTests : TestBase
     [InlineData("absjkdlfjdkjkljefklja")]
     public async Task RegisterHunter_InvalidName_ShouldReturnBadRequestWithErrorMessage(string invalidName)
     {
-        RegisterHunterEndpoint.RegisterRequest content = new(invalidName, "trmo");
+        RegisterRequestCopy content = new(invalidName, "trmo");
 
         HttpResponseMessage httpResponse = await client.PostAsync("/api/register-hunter", JsonContent.Create(content));
         List<ResultError>? response = await httpResponse.Content.ReadFromJsonAsync<List<ResultError>>();
@@ -77,7 +80,7 @@ public class RegisterHunterTests : TestBase
     [InlineData("1234567")]
     public async Task RegisterHunter_InvalidViaId_ShouldReturnBadRequestWithErrorMessage(string invalidViaId)
     {
-        RegisterHunterEndpoint.RegisterRequest content = new("John Doe", invalidViaId);
+        RegisterRequestCopy content = new("John Doe", invalidViaId);
 
         HttpResponseMessage httpResponse = await client.PostAsync("/api/register-hunter", JsonContent.Create(content));
         List<ResultError>? response = await httpResponse.Content.ReadFromJsonAsync<List<ResultError>>();
@@ -86,4 +89,7 @@ public class RegisterHunterTests : TestBase
         Assert.NotEmpty(response);
         Assert.Contains(response, error => error.Code.Equals("Hunter.ViaId"));
     }
+    
+    private RegisterRequestCopy CreateValidRegisterRequest() => new("Troels", "trmo");
+
 }

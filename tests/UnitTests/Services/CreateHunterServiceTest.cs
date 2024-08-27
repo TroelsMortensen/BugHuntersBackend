@@ -47,9 +47,12 @@ public abstract class CreateHunterServiceTest
 
                 // Act
                 Result<Hunter> result = service.CreateHunter(validId, validName, validViaId);
-                Hunter hunter = result.Payload;
+                Hunter hunter = result.Match(
+                    value => value,
+                    errors => throw new Exception("Should not happen.")
+                );
                 // Assert
-                Assert.True(result.IsSuccess);
+                Assert.True(result is Success<Hunter>);
                 Assert.Equal(validId, hunter.Id.Value.ToString());
                 Assert.Equal(validName, hunter.DisplayName.Value);
                 Assert.Equal(validViaId, hunter.ViaId.Value);
@@ -147,7 +150,7 @@ public abstract class CreateHunterServiceTest
         Result<Hunter> result = service.CreateHunter(id, name, viaId);
 
         // Assert
-        Assert.True(result.IsFailure);
+        Assert.True(result is Failure<Hunter>);
     }
 
     public static IEnumerable<object[]> GenerateInvalidInput()

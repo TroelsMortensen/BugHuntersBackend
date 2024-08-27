@@ -3,6 +3,7 @@ using BugHunters.Api.Entities.Values;
 using BugHunters.Api.Entities.Values.StrongId;
 using BugHunters.Api.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
+using static BugHunters.Api.Common.Result.ResultExt;
 
 namespace BugHunters.Api.Persistence;
 
@@ -33,5 +34,22 @@ public class BugHunterContext(DbContextOptions<BugHunterContext> options) : DbCo
         configurationBuilder
             .Properties<Id<Bug>>()
             .HaveConversion<BugIdConverter>();
+    }
+}
+
+public static class ContextExt
+{
+    public static async Task<Result<None>> TrySaveChangesAsync(this BugHunterContext context)
+    {
+        try
+        {
+            await context.SaveChangesAsync();
+            return Success();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return Failure(new ResultError("SaveChangesFailed", e.Message));
+        }
     }
 }

@@ -21,14 +21,13 @@ public record ViaId
 
     private static Result<ViaId> Create(string value) =>
         StartValidation()
-            .AssertThat(
-                () => IsStudentNumberOrTeacherInitials(value),
-                new ResultError("Hunter.ViaId", "Invalid Via ID format. Must be 6 digits, or 3-4 letters.")
-            )
+            .AssertThat(IsStudentNumberOrTeacherInitials(value))
             .WithPayloadIfSuccess(() => new ViaId(value));
 
-    private static bool IsStudentNumberOrTeacherInitials(string value) =>
-        IsSixDigits(value) || IsValidInitials(value);
+    private static Func<Result<None>> IsStudentNumberOrTeacherInitials(string value) =>
+        () => IsSixDigits(value) || IsValidInitials(value)
+            ? Success()
+            : new ResultError("Hunter.ViaId", "Invalid Via ID format. Must be 6 digits, or 3-4 letters.");
 
     private static bool IsValidInitials(string value) =>
         value.Length is >= 3 and <= 4 && value.All(char.IsLetter);

@@ -22,12 +22,15 @@ public class RegisterHunterTests : TestBase
         RegisterHunterEndpoint.RegisterRequest content = CreateValidRegisterRequest();
 
         HttpResponseMessage httpResponse = await client.PostAsync("/api/register-hunter", JsonContent.Create(content));
-        RegisterHunterEndpoint.RegisterResponse? response =
-            await httpResponse.Content.ReadFromJsonAsync<RegisterHunterEndpoint.RegisterResponse>();
+        RegisterResponseCopy? response =
+            await httpResponse.Content.ReadFromJsonAsync<RegisterResponseCopy>();
 
         Assert.NotNull(response);
-        Assert.NotEmpty(response.Id);
+        Assert.NotEmpty(response.HunterId);
     }
+    
+    private record RegisterResponseCopy(string HunterId, string HunterName, string ViaId);
+
 
     [Fact]
     public async Task RegisterHunter_InvalidName_ShouldReturnBadRequest()

@@ -12,7 +12,7 @@ public class RegisterHunterEndpoint(BugHunterContext context)
 {
     [HttpPost("register-hunter")]
     public override async Task<IResult> HandleAsync([FromBody] RegisterRequest request) =>
-        await Guid.NewGuid().ToString()
+        await Id<Hunter>.New()
             .ToResult()
             .Map(id => RequestToHunter(request, id))
             .Map(hunter => context.Hunters.Add(hunter).Entity)
@@ -22,9 +22,9 @@ public class RegisterHunterEndpoint(BugHunterContext context)
                 ToProblemDetails
             );
 
-    private static Result<Hunter> RequestToHunter(RegisterRequest request, string hunterId) =>
+    private static Result<Hunter> RequestToHunter(RegisterRequest request, Id<Hunter> hunterId) =>
         ToObject(
-            Id<Hunter>.FromString(hunterId),
+            hunterId.ToResult(),
             DisplayName.FromString(request.Name),
             ViaId.FromString(request.ViaId),
             (id, name, viaId) => new Hunter(id, name, viaId)

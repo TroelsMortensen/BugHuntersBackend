@@ -14,9 +14,9 @@ public class RegisterHunterEndpoint(BugHunterContext context)
     public override async Task<IResult> HandleAsync([FromBody] RegisterRequest request) =>
         await Id<Hunter>.New()
             .ToResult()
-            .Map(id => RequestToHunter(request, id))
+            .Bind(id => RequestToHunter(request, id))
             .Map(hunter => context.Hunters.Add(hunter).Entity)
-            .Tee(async () => await context.TrySaveChangesAsync())
+            .Tee(context.TrySaveChangesAsync)
             .Match(
                 hunter => Results.Ok(HunterToResponse(hunter)),
                 ToProblemDetails

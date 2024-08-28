@@ -1,5 +1,4 @@
 ﻿using BugHunters.Api.Common.Endpoint;
-using BugHunters.Api.Common.HandlerContracts;
 using BugHunters.Api.Entities;
 using BugHunters.Api.Entities.Values.Hunter;
 using BugHunters.Api.Persistence;
@@ -8,8 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BugHunters.Api.Features.ChangeDisplayName;
 
 public class ChangeDisplayNameEndpoint(BugHunterContext context)
-    : ApiEndpoint
-        .WithRequest<ChangeDisplayNameEndpoint.ChangeDisplayNameRequest>
+    : ApiEndpoint.WithRequest<ChangeDisplayNameEndpoint.ChangeDisplayNameRequest>
 {
     [HttpPost("update-displayname")]
     public override async Task<IResult> HandleAsync([FromBody] ChangeDisplayNameRequest request) =>

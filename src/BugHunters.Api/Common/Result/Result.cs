@@ -221,7 +221,7 @@ public static class ResultExt
             )
         };
 
-    public static Result<TOut> ToObject<T1, T2, T3, TOut>(Result<T1> r1, Result<T2> r2, Result<T3> r3, Func<T1, T2, T3, TOut> func) =>
+    public static Result<TOut> ValuesToObject<T1, T2, T3, TOut>(Result<T1> r1, Result<T2> r2, Result<T3> r3, Func<T1, T2, T3, TOut> func) =>
         (r1, r2, r3) switch
         {
             (Success<T1> s1, Success<T2> s2, Success<T3> s3) => Success(func(s1.Value, s2.Value, s3.Value)),

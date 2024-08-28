@@ -23,7 +23,7 @@ public class RegisterHunterEndpoint(BugHunterContext context)
             );
 
     private static Result<Hunter> RequestToHunter(RegisterRequest request, Id<Hunter> hunterId) =>
-        ToObject(
+        ValuesToObject(
             hunterId.ToResult(),
             DisplayName.FromString(request.Name),
             ViaId.FromString(request.ViaId),

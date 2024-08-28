@@ -28,13 +28,6 @@ public class ChangeDisplayNameEndpoint(BugHunterContext context)
         DisplayName.FromString(newDisplayName)
             .Map(name => hunter with { DisplayName = name });
 
-    // {
-    //     
-    //     ChangeDisplayNameCommand cmd = new(request.HunterId, request.NewDisplayName);
-    //     Result<None> result = await handler.HandleAsync(cmd);
-    //     return result.IsSuccess
-    //         ? Ok()
-    //         : BadRequest(result.Errors);
-    // }
+
     public record ChangeDisplayNameRequest(string HunterId, string NewDisplayName);
 }

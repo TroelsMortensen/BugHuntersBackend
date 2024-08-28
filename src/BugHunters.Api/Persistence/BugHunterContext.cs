@@ -1,4 +1,5 @@
-﻿using BugHunters.Api.Entities;
+﻿using System.Linq.Expressions;
+using BugHunters.Api.Entities;
 using BugHunters.Api.Entities.Values;
 using BugHunters.Api.Entities.Values.StrongId;
 using BugHunters.Api.Persistence.Configurations;
@@ -51,5 +52,13 @@ public static class ContextExt
             Console.WriteLine(e);
             return Failure(new ResultError("SaveChangesFailed", e.Message));
         }
+    }
+    
+    public static async Task<Result<T>> SingleOrFailureAsync<T>(this IQueryable<T> queryable, Expression<Func<T, bool>> predicate)
+    {
+        T? entity = await queryable.SingleOrDefaultAsync(predicate);
+        return entity is null
+            ? Failure<T>(new ResultError("EntityNotFound", "Entity not found."))
+            : Success(entity);
     }
 }

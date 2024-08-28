@@ -53,21 +53,34 @@ public static class ResultExt
             _ => throw new ArgumentException("Unknown type of result.")
         };
 
-    public static async Task<Result<T>> Tee<T>(this Result<T> result, Func<Task<Result<None>>> func) =>
+    public static async Task<Result<R>> Map<T, R>(this Result<T> result, Func<T, Task<R>> func) =>
         result switch
         {
-            Success<T> => await PerformTee(result, func),
-            _ => result
+            Success<T> successResult => Success(await func(successResult.Value)),
+            Failure<T> failureResult => Failure<R>(failureResult.Errors.ToArray()),
+            _ => throw new ArgumentException("Unknown type of result.")
         };
 
-    private static async Task<Result<T>> PerformTee<T>(Result<T> result, Func<Task> func)
-    {
-        await func();
-        return result;
-    }
+    public static async Task<Result<R>> Map<T, R>(this Task<Result<T>> result, Func<T, Task<Result<R>>> func) =>
+        (await result) switch
+        {
+            Success<T> successResult => await func(successResult.Value),
+            Failure<T> failureResult => Failure<R>(failureResult.Errors.ToArray()),
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
 
-    // This is technically a bind
-    public static Result<R> Map<T, R>(this Result<T> result, Func<T, Result<R>> func) =>
+    public static async Task<Result<R>> Map<T, R>(this Task<Result<T>> result, Func<T, Result<R>> func) =>
+        (await result) switch
+        {
+            Success<T> successResult => func(successResult.Value),
+            Failure<T> failureResult => Failure<R>(failureResult.Errors.ToArray()),
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
+
+    /**
+     * Bind function
+     */
+    public static Result<R> Bind<T, R>(this Result<T> result, Func<T, Result<R>> func) =>
         result switch
         {
             Success<T> successResult => func(successResult.Value),
@@ -75,8 +88,79 @@ public static class ResultExt
             _ => throw new ArgumentException("Unknown type of result.")
         };
 
+    public static async Task<Result<R>> Bind<T, R>(this Result<T> result, Func<T, Task<Result<R>>> func) =>
+        result switch
+        {
+            Success<T> successResult => await func(successResult.Value),
+            Failure<T> failureResult => Failure<R>(failureResult.Errors.ToArray()),
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
+
+    public static async Task<Result<R>> Bind<T, R>(this Task<Result<T>> result, Func<T, Result<R>> func) =>
+        (await result) switch
+        {
+            Success<T> successResult => func(successResult.Value),
+            Failure<T> failureResult => Failure<R>(failureResult.Errors.ToArray()),
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
+
+
+    public static async Task<Result<R>> Bind<T, R>(this Task<Result<T>> result, Func<T, Task<Result<R>>> func) =>
+        (await result) switch
+        {
+            Success<T> successResult => await func(successResult.Value),
+            Failure<T> failureResult => Failure<R>(failureResult.Errors.ToArray()),
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
+
+    /**
+     * Tee function
+     */
+    public static async Task<Result<T>> Tee<T>(this Result<T> result, Func<Task<Result<None>>> func) =>
+        result switch
+        {
+            Success<T> => await PerformTeeAsync(result, func),
+            _ => result
+        };
+
+    public static async Task<Result<T>> Tee<T>(this Task<Result<T>> result, Func<Task<Result<None>>> func) =>
+        (await result) switch
+        {
+            Success<T> success => await PerformTeeAsync(success, func),
+            _ => await result
+        };
+
+    public static async Task<Result<T>> Tee<T>(this Task<Result<T>> result, Func<Result<None>> func) =>
+        (await result) switch
+        {
+            Success<T> success => PerformTee(success, func),
+            _ => await result
+        };
+
+    private static async Task<Result<T>> PerformTeeAsync<T>(Result<T> result, Func<Task<Result<None>>> func) =>
+        (await func()).Match(
+            _ => result,
+            errors => Failure<T>(errors.ToArray())
+        );
+
+    private static Result<T> PerformTee<T>(Result<T> result, Func<Result<None>> func) =>
+        func().Match(
+            _ => result,
+            errors => Failure<T>(errors.ToArray())
+        );
+
+    /**
+     * Validation
+     */
     public static Result<None> StartValidation() =>
         Success();
+
+    public static Result<None> AssertThat(this Result<None> result, Func<Result<None>> func) =>
+        new List<Result<None>>
+            {
+                result, func()
+            }
+            .Merge();
 
     public static Result<T> WithPayloadIfSuccess<T>(this Result<None> result, Func<T> payload) =>
         result switch
@@ -111,12 +195,6 @@ public static class ResultExt
             _ => throw new ArgumentException("Unknown type of result.")
         };
 
-    public static Result<None> AssertThat(this Result<None> result, Func<Result<None>> func) =>
-        new List<Result<None>>
-            {
-                result, func()
-            }
-            .Merge();
 
     public static Result<None> Combine(params Result[] results) =>
         results
@@ -153,7 +231,7 @@ public static class ResultExt
             )
         };
 
-    public static Result<None> Merge(this IEnumerable<Result> all) =>
+    private static Result<None> Merge(this IEnumerable<Result> all) =>
         all.SelectMany(result =>
                 result switch
                 {

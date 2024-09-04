@@ -171,7 +171,11 @@ public static class ResultExt
     /**
      * Match functions
      */
-    public static R Match<T, R>(this Result<T> result, Func<T, R> onSuccess, Func<IEnumerable<ResultError>, R> onFailure) =>
+    public static R Match<T, R>(
+        this Result<T> result,
+        Func<T, R> onSuccess,
+        Func<IEnumerable<ResultError>, R> onFailure
+    ) =>
         result switch
         {
             Success<T> successResult => onSuccess(successResult.Value),
@@ -179,8 +183,11 @@ public static class ResultExt
             _ => throw new ArgumentException("Unknown type of result.")
         };
 
-    public static async Task<R> Match<T, R>(this Task<Result<T>> result, Func<T, R> onSuccess,
-        Func<IEnumerable<ResultError>, R> onFailure) =>
+    public static async Task<R> Match<T, R>(
+        this Task<Result<T>> result,
+        Func<T, R> onSuccess,
+        Func<IEnumerable<ResultError>, R> onFailure
+    ) =>
         (await result) switch
         {
             Success<T> successResult => onSuccess(successResult.Value),

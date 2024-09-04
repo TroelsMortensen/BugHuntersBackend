@@ -47,7 +47,6 @@ public static class ResultExt
     /**
      * Map functions
      */
-    
     public static Result<R> Map<T, R>(this Result<T> result, Func<T, R> func) =>
         result switch
         {
@@ -155,7 +154,6 @@ public static class ResultExt
     /**
      * Validation
      */
-
     public static Result<None> AssertAll(params Func<Result<None>>[] validations) =>
         validations
             .Select(validation => validation())
@@ -173,7 +171,6 @@ public static class ResultExt
     /**
      * Match functions
      */
-    
     public static R Match<T, R>(this Result<T> result, Func<T, R> onSuccess, Func<IEnumerable<ResultError>, R> onFailure) =>
         result switch
         {
@@ -191,6 +188,9 @@ public static class ResultExt
             _ => throw new ArgumentException("Unknown type of result.")
         };
 
+    /**
+     * Extract value function
+     */
     public static T ValueOr<T>(this Result<T> result, Func<IEnumerable<ResultError>, T> onFailure) =>
         result switch
         {
@@ -199,8 +199,10 @@ public static class ResultExt
             _ => throw new ArgumentException("Unknown type of result.")
         };
 
-
-    public static Result<None> Combine(params Result[] results) =>
+    /**
+     * Merge multiple results
+     */
+    private static Result<None> Combine(params Result[] results) =>
         results
             .ToList()
             .Merge();
@@ -214,7 +216,25 @@ public static class ResultExt
                 })
             .ErrorsToSingleResult();
 
+    // Sometimes the contained object type is not important, only the errors.
+    private static Result<None> Merge(this IEnumerable<Result> all) =>
+        all.SelectMany(result =>
+                result switch
+                {
+                    Failure<None> failure => failure.Errors,
+                    _ => Array.Empty<ResultError>()
+                })
+            .ErrorsToSingleResult();
 
+    private static Result<None> ErrorsToSingleResult(this IEnumerable<ResultError> errors) =>
+        errors.Any()
+            ? Failure<None>(errors.ToArray())
+            : Success();
+
+    /*
+     * Extract values of multiple results, and create a new object from the values, or return a failure with all errors.
+     * Multiple overloads for different number of input results.
+     */
     public static Result<TOut> ValuesToObject<T1, T2, TOut>(Result<T1> r1, Result<T2> r2, Func<T1, T2, TOut> func) =>
         (r1, r2) switch
         {
@@ -234,21 +254,6 @@ public static class ResultExt
                 errors => Failure<TOut>(errors.ToArray())
             )
         };
-
-
-    private static Result<None> Merge(this IEnumerable<Result> all) =>
-        all.SelectMany(result =>
-                result switch
-                {
-                    Failure<None> failure => failure.Errors,
-                    _ => Array.Empty<ResultError>()
-                })
-            .ErrorsToSingleResult();
-
-    private static Result<None> ErrorsToSingleResult(this IEnumerable<ResultError> errors) =>
-        errors.Any()
-            ? Failure<None>(errors.ToArray())
-            : Success();
 
 
     private static Result<None> None => Success(new None());

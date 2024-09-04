@@ -262,6 +262,5 @@ public static class ResultExt
             )
         };
 
-
     private static Result<None> None => Success(new None());
 }

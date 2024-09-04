@@ -44,6 +44,10 @@ public static class ResultExt
             _ => Success(value)
         };
 
+    /**
+     * Map functions
+     */
+    
     public static Result<R> Map<T, R>(this Result<T> result, Func<T, R> func) =>
         result switch
         {
@@ -77,7 +81,7 @@ public static class ResultExt
         };
 
     /**
-     * Bind function
+     * Bind functions
      */
     public static Result<R> Bind<T, R>(this Result<T> result, Func<T, Result<R>> func) =>
         result switch
@@ -113,7 +117,7 @@ public static class ResultExt
         };
 
     /**
-     * Tee function
+     * Tee functions
      */
     public static async Task<Result<T>> Tee<T>(this Result<T> result, Func<Task<Result<None>>> func) =>
         result switch
@@ -151,15 +155,6 @@ public static class ResultExt
     /**
      * Validation
      */
-    // public static Result<None> StartValidation() =>
-    //     Success();
-    //
-    // public static Result<None> AssertThat(this Result<None> result, Func<Result<None>> func) =>
-    //     new List<Result<None>>
-    //         {
-    //             result, func()
-    //         }
-    //         .Merge();
 
     public static Result<None> AssertAll(params Func<Result<None>>[] validations) =>
         validations
@@ -175,6 +170,10 @@ public static class ResultExt
             _ => throw new ArgumentException("Unknown type of result.")
         };
 
+    /**
+     * Match functions
+     */
+    
     public static R Match<T, R>(this Result<T> result, Func<T, R> onSuccess, Func<IEnumerable<ResultError>, R> onFailure) =>
         result switch
         {
@@ -185,7 +184,7 @@ public static class ResultExt
 
     public static async Task<R> Match<T, R>(this Task<Result<T>> result, Func<T, R> onSuccess,
         Func<IEnumerable<ResultError>, R> onFailure) =>
-        result switch
+        (await result) switch
         {
             Success<T> successResult => onSuccess(successResult.Value),
             Failure<T> failureResult => onFailure(failureResult.Errors),

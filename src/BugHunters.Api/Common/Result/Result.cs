@@ -152,15 +152,21 @@ public static class ResultExt
     /**
      * Validation
      */
-    public static Result<None> StartValidation() =>
-        Success();
+    // public static Result<None> StartValidation() =>
+    //     Success();
+    //
+    // public static Result<None> AssertThat(this Result<None> result, Func<Result<None>> func) =>
+    //     new List<Result<None>>
+    //         {
+    //             result, func()
+    //         }
+    //         .Merge();
 
-    public static Result<None> AssertThat(this Result<None> result, Func<Result<None>> func) =>
-        new List<Result<None>>
-            {
-                result, func()
-            }
+    public static Result<None> AssertAll(params Func<Result<None>>[] validations) =>
+        validations
+            .Select(validation => validation())
             .Merge();
+
 
     public static Result<T> WithPayloadIfSuccess<T>(this Result<None> result, Func<T> payload) =>
         result switch
@@ -211,7 +217,7 @@ public static class ResultExt
             .ErrorsToSingleResult();
 
 
-    public static Result<TOut> ToObject<T1, T2, TOut>(Result<T1> r1, Result<T2> r2, Func<T1, T2, TOut> func) =>
+    public static Result<TOut> ValuesToObject<T1, T2, TOut>(Result<T1> r1, Result<T2> r2, Func<T1, T2, TOut> func) =>
         (r1, r2) switch
         {
             (Success<T1> s1, Success<T2> s2) => Success(func(s1.Value, s2.Value)),
@@ -230,6 +236,7 @@ public static class ResultExt
                 errors => Failure<TOut>(errors.ToArray())
             )
         };
+
 
     private static Result<None> Merge(this IEnumerable<Result> all) =>
         all.SelectMany(result =>

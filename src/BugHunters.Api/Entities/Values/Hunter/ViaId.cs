@@ -20,8 +20,9 @@ public record ViaId
             .Replace("@viauc.dk", "");
 
     private static Result<ViaId> Create(string value) =>
-        StartValidation()
-            .AssertThat(IsStudentNumberOrTeacherInitials(value))
+        AssertAll(
+                IsStudentNumberOrTeacherInitials(value)
+            )
             .WithPayloadIfSuccess(() => new ViaId(value));
 
     private static Func<Result<None>> IsStudentNumberOrTeacherInitials(string value) =>

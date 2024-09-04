@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using static BugHunters.Api.Common.Result.ResultExt;
+﻿using static BugHunters.Api.Common.Result.ResultExt;
 
 namespace BugHunters.Api.Common.Result;
 

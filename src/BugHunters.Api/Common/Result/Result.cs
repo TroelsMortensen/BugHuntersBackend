@@ -37,42 +37,42 @@ public static class ResultExt
     public static Result<None> Failure(params ResultError[] errors) =>
         new Failure<None>(errors);
 
-    public static Result<T> ToResult<T>(this T value) =>
-        value switch
+    public static Result<T> ToResult<T>(this T self) =>
+        self switch
         {
             null => Failure<T>(new ResultError("NullValue", "Value is null.")),
-            _ => Success(value)
+            _ => Success(self)
         };
 
     /**
      * Map functions
      */
-    public static Result<R> Map<T, R>(this Result<T> result, Func<T, R> func) =>
-        result switch
+    public static Result<R> Map<T, R>(this Result<T> self, Func<T, R> func) =>
+        self switch
         {
             Success<T> successResult => Success(func(successResult.Value)),
             Failure<T> failureResult => Failure<R>(failureResult.Errors.ToArray()),
             _ => throw new ArgumentException("Unknown type of result.")
         };
 
-    public static async Task<Result<R>> Map<T, R>(this Result<T> result, Func<T, Task<R>> func) =>
-        result switch
+    public static async Task<Result<R>> Map<T, R>(this Result<T> self, Func<T, Task<R>> func) =>
+        self switch
         {
             Success<T> successResult => Success(await func(successResult.Value)),
             Failure<T> failureResult => Failure<R>(failureResult.Errors.ToArray()),
             _ => throw new ArgumentException("Unknown type of result.")
         };
 
-    public static async Task<Result<R>> Map<T, R>(this Task<Result<T>> result, Func<T, Task<Result<R>>> func) =>
-        (await result) switch
+    public static async Task<Result<R>> Map<T, R>(this Task<Result<T>> self, Func<T, Task<Result<R>>> func) =>
+        (await self) switch
         {
             Success<T> successResult => await func(successResult.Value),
             Failure<T> failureResult => Failure<R>(failureResult.Errors.ToArray()),
             _ => throw new ArgumentException("Unknown type of result.")
         };
 
-    public static async Task<Result<R>> Map<T, R>(this Task<Result<T>> result, Func<T, Result<R>> func) =>
-        (await result) switch
+    public static async Task<Result<R>> Map<T, R>(this Task<Result<T>> self, Func<T, Result<R>> func) =>
+        (await self) switch
         {
             Success<T> successResult => func(successResult.Value),
             Failure<T> failureResult => Failure<R>(failureResult.Errors.ToArray()),
@@ -82,24 +82,24 @@ public static class ResultExt
     /**
      * Bind functions
      */
-    public static Result<R> Bind<T, R>(this Result<T> result, Func<T, Result<R>> func) =>
-        result switch
+    public static Result<R> Bind<T, R>(this Result<T> self, Func<T, Result<R>> func) =>
+        self switch
         {
             Success<T> successResult => func(successResult.Value),
             Failure<T> failureResult => Failure<R>(failureResult.Errors.ToArray()),
             _ => throw new ArgumentException("Unknown type of result.")
         };
 
-    public static async Task<Result<R>> Bind<T, R>(this Result<T> result, Func<T, Task<Result<R>>> func) =>
-        result switch
+    public static async Task<Result<R>> Bind<T, R>(this Result<T> self, Func<T, Task<Result<R>>> func) =>
+        self switch
         {
             Success<T> successResult => await func(successResult.Value),
             Failure<T> failureResult => Failure<R>(failureResult.Errors.ToArray()),
             _ => throw new ArgumentException("Unknown type of result.")
         };
 
-    public static async Task<Result<R>> Bind<T, R>(this Task<Result<T>> result, Func<T, Result<R>> func) =>
-        (await result) switch
+    public static async Task<Result<R>> Bind<T, R>(this Task<Result<T>> self, Func<T, Result<R>> func) =>
+        (await self) switch
         {
             Success<T> successResult => func(successResult.Value),
             Failure<T> failureResult => Failure<R>(failureResult.Errors.ToArray()),
@@ -107,8 +107,8 @@ public static class ResultExt
         };
 
 
-    public static async Task<Result<R>> Bind<T, R>(this Task<Result<T>> result, Func<T, Task<Result<R>>> func) =>
-        (await result) switch
+    public static async Task<Result<R>> Bind<T, R>(this Task<Result<T>> self, Func<T, Task<Result<R>>> func) =>
+        (await self) switch
         {
             Success<T> successResult => await func(successResult.Value),
             Failure<T> failureResult => Failure<R>(failureResult.Errors.ToArray()),
@@ -118,25 +118,25 @@ public static class ResultExt
     /**
      * Tee functions
      */
-    public static async Task<Result<T>> Tee<T>(this Result<T> result, Func<Task<Result<None>>> func) =>
-        result switch
+    public static async Task<Result<T>> Tee<T>(this Result<T> self, Func<Task<Result<None>>> func) =>
+        self switch
         {
-            Success<T> => await PerformTeeAsync(result, func),
-            _ => result
+            Success<T> => await PerformTeeAsync(self, func),
+            _ => self
         };
 
-    public static async Task<Result<T>> Tee<T>(this Task<Result<T>> result, Func<Task<Result<None>>> func) =>
-        (await result) switch
+    public static async Task<Result<T>> Tee<T>(this Task<Result<T>> self, Func<Task<Result<None>>> func) =>
+        (await self) switch
         {
             Success<T> success => await PerformTeeAsync(success, func),
-            _ => await result
+            _ => await self
         };
 
-    public static async Task<Result<T>> Tee<T>(this Task<Result<T>> result, Func<Result<None>> func) =>
-        (await result) switch
+    public static async Task<Result<T>> Tee<T>(this Task<Result<T>> self, Func<Result<None>> func) =>
+        (await self) switch
         {
             Success<T> success => PerformTee(success, func),
-            _ => await result
+            _ => await self
         };
 
     private static async Task<Result<T>> PerformTeeAsync<T>(Result<T> result, Func<Task<Result<None>>> func) =>
@@ -160,8 +160,8 @@ public static class ResultExt
             .Merge();
 
 
-    public static Result<T> WithPayloadIfSuccess<T>(this Result<None> result, Func<T> payload) =>
-        result switch
+    public static Result<T> WithPayloadIfSuccess<T>(this Result<None> self, Func<T> payload) =>
+        self switch
         {
             Success<T> => Success(payload()),
             Failure<T> failure => failure,
@@ -172,11 +172,11 @@ public static class ResultExt
      * Match functions
      */
     public static R Match<T, R>(
-        this Result<T> result,
+        this Result<T> self,
         Func<T, R> onSuccess,
         Func<IEnumerable<ResultError>, R> onFailure
     ) =>
-        result switch
+        self switch
         {
             Success<T> successResult => onSuccess(successResult.Value),
             Failure<T> failureResult => onFailure(failureResult.Errors),
@@ -184,11 +184,11 @@ public static class ResultExt
         };
 
     public static async Task<R> Match<T, R>(
-        this Task<Result<T>> result,
+        this Task<Result<T>> self,
         Func<T, R> onSuccess,
         Func<IEnumerable<ResultError>, R> onFailure
     ) =>
-        (await result) switch
+        (await self) switch
         {
             Success<T> successResult => onSuccess(successResult.Value),
             Failure<T> failureResult => onFailure(failureResult.Errors),
@@ -198,8 +198,8 @@ public static class ResultExt
     /**
      * Extract value function
      */
-    public static T ValueOr<T>(this Result<T> result, Func<IEnumerable<ResultError>, T> onFailure) =>
-        result switch
+    public static T ValueOr<T>(this Result<T> self, Func<IEnumerable<ResultError>, T> onFailure) =>
+        self switch
         {
             Success<T> successResult => successResult.Value,
             Failure<T> failure => onFailure(failure.Errors),

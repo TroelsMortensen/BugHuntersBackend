@@ -263,4 +263,23 @@ public static class ResultExt
         };
 
     private static Result<None> None => Success(new None());
+
+    /**
+     * Where function
+     */
+    public static Result<T> Where<T>(this Result<T> self, Func<T, Result<T>> predicate) =>
+        self switch
+        {
+            Success<T> successResult => predicate(successResult.Value),
+            Failure<T> failureResult => failureResult,
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
+    
+    public static async Task<Result<T>> Where<T>(this Result<T> self, Func<T, Task<Result<T>>> predicate) =>
+        self switch
+        {
+            Success<T> successResult => await predicate(successResult.Value),
+            Failure<T> failureResult => failureResult,
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
 }

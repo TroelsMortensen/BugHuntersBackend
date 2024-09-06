@@ -13,16 +13,20 @@ public class CatchBugEndpoint(BugHunterContext context)
     public override async Task<IResult> HandleAsync(CatchBugRequest request)
     {
         ToTuple(request)
-            .Where(tuple => BugNotAlreadyCaught(tuple, context))
+            .Where(hunterIdAndBugId => BugNotAlreadyCaught(hunterIdAndBugId, context))
             .Map(tuple => LoadEntitiesAsync(tuple, context))
-            
-            
     }
 
-    private bool BugNotAlreadyCaught((Id<Hunter> HunterId, Id<Bug> BugId) ids, BugHunterContext bugHunterContext)
-    {
-        throw new NotImplementedException();
-    }
+    private static async Task<Result<(Id<Hunter> HunterId, Id<Bug> BugId)>> BugNotAlreadyCaught(
+        (Id<Hunter> HunterId, Id<Bug> BugId) ids,
+        BugHunterContext ctx
+    ) =>
+        await ctx.BugCatches.SingleOrFailureAsync(cb => cb.BugId == ids.BugId && cb.HunterId == ids.HunterId)
+            .Match(
+                _ => ids,
+                errors => Failure<(Id<Hunter> HunterId, Id<Bug> BugId)>(errors.ToArray())
+            );
+
 
     private static async Task<Result<(Hunter Hunter, Bug Bug)>> LoadEntitiesAsync(
         (Id<Hunter> HunterId, Id<Bug> BugId) ids,

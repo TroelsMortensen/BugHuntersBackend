@@ -12,44 +12,41 @@ public class CatchBugEndpoint(BugHunterContext context)
     [HttpPost("catch-bug")]
     public override async Task<IResult> HandleAsync(CatchBugRequest request) =>
         await ToIdPairFrom(request)
-            .Where(idPair => BugNotAlreadyCaught(idPair, context))
-            .Where(idPair => HunterExists(idPair, context))
-            .Where(idPair => BugExists(idPair, context))
+            .Where(HunterExists(context))
+            .Where(BugExists())
+            .Where(BugNotAlreadyCaught(context))
             .Map(IdsToBugCatch)
-            .Map(bugCatch => context.BugCatches.Add(bugCatch).Entity)
-            .Tee(context.TrySaveChangesAsync)
+            .Map(AddBugCatchToDb())
+            .Tee(Save())
             .Match(
                 _ => Results.Ok(),
                 ToProblemDetails);
 
+    private Func<Task<Result<None>>> Save() =>
+        context.TrySaveChangesAsync;
 
-    private static BugCatch IdsToBugCatch(HunterBugIds tuple) =>
-        new(tuple.HunterId, tuple.BugId, DateTime.Now);
+    private Func<BugCatch, BugCatch> AddBugCatchToDb() =>
+        bugCatch => context.BugCatches.Add(bugCatch).Entity;
 
-    private static async Task<Result<HunterBugIds>> BugExists(
-        HunterBugIds tuple,
-        BugHunterContext ctx) =>
-        await ctx.Bugs.SingleOrFailureAsync(b => b.Id == tuple.BugId)
-            .Match(
-                _ => tuple,
-                errors => Failure<HunterBugIds>(errors.ToArray())
-            );
-
-
-    private static async Task<Result<HunterBugIds>> HunterExists(
-        HunterBugIds ids,
-        BugHunterContext ctx) =>
-        await ctx.Hunters.SingleOrFailureAsync(h => h.Id == ids.HunterId)
+    private Func<HunterBugIds, Task<Result<HunterBugIds>>> BugExists() =>
+        ids => context.Bugs.SingleOrFailureAsync(b => b.Id == ids.BugId)
             .Match(
                 _ => ids,
                 errors => Failure<HunterBugIds>(errors.ToArray())
             );
 
-    private static async Task<Result<HunterBugIds>> BugNotAlreadyCaught(
-        HunterBugIds ids,
-        BugHunterContext ctx
-    ) =>
-        await ctx.BugCatches.SingleOrFailureAsync(cb => cb.BugId == ids.BugId && cb.HunterId == ids.HunterId)
+    private static Func<HunterBugIds, Task<Result<HunterBugIds>>> BugNotAlreadyCaught(BugHunterContext ctx) =>
+        ids => ctx.BugCatches.SingleOrFailureAsync(cb => cb.BugId == ids.BugId && cb.HunterId == ids.HunterId)
+            .Match(
+                _ => ids,
+                errors => Failure<HunterBugIds>(errors.ToArray())
+            );
+
+    private static BugCatch IdsToBugCatch(HunterBugIds tuple) =>
+        new(tuple.HunterId, tuple.BugId, DateTime.Now);
+
+    private static Func<HunterBugIds, Task<Result<HunterBugIds>>> HunterExists(BugHunterContext ctx) =>
+        ids => ctx.Hunters.SingleOrFailureAsync(h => h.Id == ids.HunterId)
             .Match(
                 _ => ids,
                 errors => Failure<HunterBugIds>(errors.ToArray())

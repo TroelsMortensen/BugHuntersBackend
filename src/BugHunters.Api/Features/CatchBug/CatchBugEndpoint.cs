@@ -14,23 +14,23 @@ public class CatchBugEndpoint(BugHunterContext context)
     public override async Task<IResult> HandleAsync(CatchBugRequest request) =>
         await ToIdPairFrom(request)
             .Where(HunterExists(context))
-            .Where(BugExists())
+            .Where(BugExists(context))
             .Where(BugNotAlreadyCaught(context))
             .Map(IdsToBugCatch)
-            .Map(AddBugCatchToDb())
-            .Tee(Save())
+            .Map(AddBugCatchToDb(context))
+            .Tee(Save(context))
             .Match(
                 _ => Results.Ok(),
                 ToProblemDetails);
 
-    private Func<Task<Result<None>>> Save() =>
-        context.TrySaveChangesAsync;
+    private static Func<Task<Result<None>>> Save(BugHunterContext ctx) =>
+        ctx.TrySaveChangesAsync;
 
-    private Func<BugCatch, BugCatch> AddBugCatchToDb() =>
-        bugCatch => context.BugCatches.Add(bugCatch).Entity;
+    private static Func<BugCatch, BugCatch> AddBugCatchToDb(BugHunterContext ctx) =>
+        bugCatch => ctx.BugCatches.Add(bugCatch).Entity;
 
-    private Func<HunterBugIds, Task<Result<HunterBugIds>>> BugExists() =>
-        async ids => await context.Bugs.AnyAsync(b => b.Id == ids.BugId)
+    private static Func<HunterBugIds, Task<Result<HunterBugIds>>> BugExists(BugHunterContext ctx) =>
+        async ids => await ctx.Bugs.AnyAsync(b => b.Id == ids.BugId)
             ? Success(ids)
             : Failure<HunterBugIds>(new ResultError("BugNotFound", "Bug not found."));
 

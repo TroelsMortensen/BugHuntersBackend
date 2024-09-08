@@ -1,9 +1,7 @@
 ﻿using System.Net;
-using BugHunters.Api.Common.Result;
 using BugHunters.Api.Entities;
 using BugHunters.Api.Entities.Values.Hunter;
 using BugHunters.Api.Entities.Values.StrongId;
-using BugHunters.Api.Features.CatchBug;
 using BugHunters.Api.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +9,8 @@ namespace IntegrationTests.Features;
 
 public class CatchBugTests
 {
+    public record CatchBugRequestCopy(string BugId, string HunterId);
+
     [Fact]
     public async Task CatchBug_ValidHunterAndBug_ShouldReturnOk()
     {
@@ -19,7 +19,7 @@ public class CatchBugTests
         Id<Hunter> hunterId = await AddValidHunter(waf);
         HttpClient client = waf.CreateClient();
 
-        CatchBugRequest request = new(bugId.Value.ToString(), hunterId.Value.ToString());
+        CatchBugRequestCopy request = new(bugId.Value.ToString(), hunterId.Value.ToString());
 
         HttpResponseMessage httpResponse = await client.PostAsync("/api/catch-bug", JsonContent.Create(request));
         Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);

@@ -139,6 +139,17 @@ public static class ResultExt
             _ => await self
         };
 
+    // public static async Task<Result<T1>> Tee<T1, T2>(this Result<T1> self, Func<Task<T2>> func)
+    // {
+    //     if (self is Success<T1>)
+    //     {
+    //         await func();
+    //     }
+    //
+    //     return self;
+    // }
+
+
     private static async Task<Result<T>> PerformTeeAsync<T>(Result<T> result, Func<Task<Result<None>>> func) =>
         (await func()).Match(
             _ => result,
@@ -223,7 +234,7 @@ public static class ResultExt
                 })
             .ErrorsToSingleResult();
 
-    // Sometimes the contained object type is not important, only the errors.
+// Sometimes the contained object type is not important, only the errors.
     private static Result<None> Merge(this IEnumerable<Result> all) =>
         all.SelectMany(result =>
                 result switch
@@ -238,10 +249,10 @@ public static class ResultExt
             ? Failure<None>(errors.ToArray())
             : Success();
 
-    /*
-     * Extract values of multiple results, and create a new object from the values, or return a failure with all errors.
-     * Multiple overloads for different number of input results.
-     */
+/*
+ * Extract values of multiple results, and create a new object from the values, or return a failure with all errors.
+ * Multiple overloads for different number of input results.
+ */
     public static Result<TOut> ValuesToObject<T1, T2, TOut>(Result<T1> r1, Result<T2> r2, Func<T1, T2, TOut> func) =>
         (r1, r2) switch
         {
@@ -274,7 +285,7 @@ public static class ResultExt
             Failure<T> failureResult => failureResult,
             _ => throw new ArgumentException("Unknown type of result.")
         };
-    
+
     public static async Task<Result<T>> Where<T>(this Result<T> self, Func<T, Task<Result<T>>> predicate) =>
         self switch
         {
@@ -282,7 +293,7 @@ public static class ResultExt
             Failure<T> failureResult => failureResult,
             _ => throw new ArgumentException("Unknown type of result.")
         };
-    
+
     public static async Task<Result<T>> Where<T>(this Task<Result<T>> self, Func<T, Result<T>> predicate) =>
         (await self) switch
         {
@@ -290,7 +301,7 @@ public static class ResultExt
             Failure<T> failureResult => failureResult,
             _ => throw new ArgumentException("Unknown type of result.")
         };
-    
+
     public static async Task<Result<T>> Where<T>(this Task<Result<T>> self, Func<T, Task<Result<T>>> predicate) =>
         (await self) switch
         {

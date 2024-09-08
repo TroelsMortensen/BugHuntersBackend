@@ -22,7 +22,7 @@ public class ChangeDisplayNameEndpoint(BugHunterContext context)
             );
 
 
-    public static Result<Hunter> ChangeDisplayName(Hunter hunter, string newDisplayName) =>
+    private static Result<Hunter> ChangeDisplayName(Hunter hunter, string newDisplayName) =>
         DisplayName.FromString(newDisplayName)
             .Map(name => hunter with { DisplayName = name });
 

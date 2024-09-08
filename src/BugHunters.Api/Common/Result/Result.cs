@@ -63,7 +63,7 @@ public static class ResultExt
             _ => throw new ArgumentException("Unknown type of result.")
         };
 
-    public static async Task<Result<R>> Map<T, R>(this Task<Result<T>> self, Func<T, Task<Result<R>>> func) =>
+    public static async Task<Result<R>> Map<T, R>(this Task<Result<T>> self, Func<T, Task<R>> func) =>
         (await self) switch
         {
             Success<T> successResult => await func(successResult.Value),
@@ -71,7 +71,7 @@ public static class ResultExt
             _ => throw new ArgumentException("Unknown type of result.")
         };
 
-    public static async Task<Result<R>> Map<T, R>(this Task<Result<T>> self, Func<T, Result<R>> func) =>
+    public static async Task<Result<R>> Map<T, R>(this Task<Result<T>> self, Func<T, R> func) =>
         (await self) switch
         {
             Success<T> successResult => func(successResult.Value),
@@ -277,6 +277,22 @@ public static class ResultExt
     
     public static async Task<Result<T>> Where<T>(this Result<T> self, Func<T, Task<Result<T>>> predicate) =>
         self switch
+        {
+            Success<T> successResult => await predicate(successResult.Value),
+            Failure<T> failureResult => failureResult,
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
+    
+    public static async Task<Result<T>> Where<T>(this Task<Result<T>> self, Func<T, Result<T>> predicate) =>
+        (await self) switch
+        {
+            Success<T> successResult => predicate(successResult.Value),
+            Failure<T> failureResult => failureResult,
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
+    
+    public static async Task<Result<T>> Where<T>(this Task<Result<T>> self, Func<T, Task<Result<T>>> predicate) =>
+        (await self) switch
         {
             Success<T> successResult => await predicate(successResult.Value),
             Failure<T> failureResult => failureResult,

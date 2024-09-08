@@ -20,7 +20,7 @@ public class CatchBugEndpoint(BugHunterContext context)
             .Map(AddBugCatchToDb(context))
             .Tee(Save(context))
             .Match(
-                _ => Results.Ok(),
+                _ => Results.NoContent(),
                 ToProblemDetails);
 
     private static Func<Task<Result<None>>> Save(BugHunterContext ctx) =>

@@ -15,7 +15,7 @@ public class ChangeDisplayNameEndpoint(BugHunterContext context)
         await Id<Hunter>.FromString(request.HunterId)
             .Bind(id => context.Hunters.SingleOrFailureAsync(h => h.Id == id))
             .Bind(hunter => ChangeDisplayName(hunter, request.NewDisplayName))
-            .Map<Hunter, Hunter>(hunter => context.Hunters.Update(hunter).Entity)
+            .Map(hunter => context.Hunters.Update(hunter).Entity)
             .Tee(context.TrySaveChangesAsync)
             .Match(
                 _ => Results.NoContent(),

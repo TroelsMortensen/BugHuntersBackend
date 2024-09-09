@@ -1,6 +1,6 @@
-﻿using BugHunters.Api.Entities.Values.Hunter;
+﻿using BugHunters.Api.Entities.Common;
 
-namespace BugHunters.Api.Entities;
+namespace BugHunters.Api.Entities.HunterEntity;
 
 public record Hunter
 {

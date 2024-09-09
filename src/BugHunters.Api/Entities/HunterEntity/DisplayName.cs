@@ -1,6 +1,6 @@
 ﻿using static BugHunters.Api.Common.Result.ResultExt;
 
-namespace BugHunters.Api.Entities.Values.Hunter;
+namespace BugHunters.Api.Entities.HunterEntity;
 
 public record DisplayName
 {

@@ -1,7 +1,9 @@
-﻿namespace BugHunters.Api.Entities.Values.StrongId;
+﻿namespace BugHunters.Api.Entities.Common;
 
 public record Id<T>
 {
+    // Todo: split this into record, and functions module.
+    
     public Guid Value { get; }
 
     private Id()

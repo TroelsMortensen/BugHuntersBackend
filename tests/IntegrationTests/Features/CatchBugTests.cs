@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using BugHunters.Api.Entities;
-using BugHunters.Api.Entities.Values.Hunter;
-using BugHunters.Api.Entities.Values.StrongId;
+using BugHunters.Api.Entities.Common;
+using BugHunters.Api.Entities.HunterEntity;
 using BugHunters.Api.Persistence;
 using Microsoft.EntityFrameworkCore;
 

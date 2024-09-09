@@ -1,5 +1,5 @@
-﻿using BugHunters.Api.Entities.Values;
-using BugHunters.Api.Entities.Values.StrongId;
+﻿using BugHunters.Api.Entities.Common;
+using BugHunters.Api.Entities.HunterEntity;
 
 namespace BugHunters.Api.Entities;
 

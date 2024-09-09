@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using BugHunters.Api.Entities;
-using BugHunters.Api.Entities.Values;
-using BugHunters.Api.Entities.Values.StrongId;
+using BugHunters.Api.Entities.Common;
+using BugHunters.Api.Entities.HunterEntity;
 using BugHunters.Api.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
 using static BugHunters.Api.Common.Result.ResultExt;
@@ -62,6 +62,8 @@ public static class ContextExt
             : Success(entity);
     }
 
+    // This is a bit funky with the toReturn arg. But that's what I've needed twice.
+    // Maybe I should split it into the "exists"-part, and the return something part. Eventually.
     public static async Task<Result<T>> HunterExists<T>(this BugHunterContext context, Id<Hunter> hunterId, T toReturn) =>
         await context.Hunters.AnyAsync(h => h.Id == hunterId)
             ? Success(toReturn)

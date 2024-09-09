@@ -1,6 +1,7 @@
 ﻿using BugHunters.Api.Common.Endpoint;
 using BugHunters.Api.Entities;
-using BugHunters.Api.Entities.Values.Hunter;
+using BugHunters.Api.Entities.Common;
+using BugHunters.Api.Entities.HunterEntity;
 using BugHunters.Api.Persistence;
 using Microsoft.AspNetCore.Mvc;
 using static BugHunters.Api.Common.Result.ResultExt;

@@ -1,5 +1,7 @@
 ﻿using BugHunters.Api.Common.Endpoint;
 using BugHunters.Api.Entities;
+using BugHunters.Api.Entities.Common;
+using BugHunters.Api.Entities.HunterEntity;
 using BugHunters.Api.Persistence;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +15,7 @@ public class CatchBugEndpoint(BugHunterContext context)
     [HttpPost("catch-bug")]
     public override async Task<IResult> HandleAsync(CatchBugRequest request) =>
         await ToIdPairFrom(request)
-            .Where(HunterExists(context))
+            .Where(ids => context.HunterExists(ids.HunterId, ids))
             .Where(BugExists(context))
             .Where(BugNotAlreadyCaught(context))
             .Map(IdsToBugCatch)
@@ -43,10 +45,10 @@ public class CatchBugEndpoint(BugHunterContext context)
     private static BugCatch IdsToBugCatch(HunterBugIds tuple) =>
         new(tuple.HunterId, tuple.BugId, DateTime.Now);
 
-    private static Func<HunterBugIds, Task<Result<HunterBugIds>>> HunterExists(BugHunterContext ctx) =>
-        async ids => await ctx.Hunters.AnyAsync(h => h.Id == ids.HunterId)
-            ? Success(ids)
-            : Failure<HunterBugIds>(new ResultError("HunterNotFound", "Hunter not found."));
+    // private static Func<HunterBugIds, Task<Result<HunterBugIds>>> HunterExists(BugHunterContext ctx) =>
+    //     async ids => await ctx.Hunters.AnyAsync(h => h.Id == ids.HunterId)
+    //         ? Success(ids)
+    //         : Failure<HunterBugIds>(new ResultError("HunterNotFound", "Hunter not found."));
 
 
     private static Result<HunterBugIds> ToIdPairFrom(CatchBugRequest request) =>

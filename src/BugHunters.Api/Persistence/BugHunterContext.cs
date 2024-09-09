@@ -53,7 +53,7 @@ public static class ContextExt
             return Failure(new ResultError("SaveChangesFailed", e.Message));
         }
     }
-    
+
     public static async Task<Result<T>> SingleOrFailureAsync<T>(this IQueryable<T> queryable, Expression<Func<T, bool>> predicate)
     {
         T? entity = await queryable.SingleOrDefaultAsync(predicate);
@@ -61,4 +61,9 @@ public static class ContextExt
             ? Failure<T>(new ResultError("EntityNotFound", "Entity not found."))
             : Success(entity);
     }
+
+    public static async Task<Result<T>> HunterExists<T>(this BugHunterContext context, Id<Hunter> hunterId, T toReturn) =>
+        await context.Hunters.AnyAsync(h => h.Id == hunterId)
+            ? Success(toReturn)
+            : Failure<T>(new ResultError("HunterNotFound", "Hunter not found."));
 }

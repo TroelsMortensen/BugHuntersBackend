@@ -4,23 +4,20 @@ using Microsoft.AspNetCore.Mvc;
 namespace BugHunters.Api.Features.ViewHunterProfile;
 
 public class ViewHunterProfileEndpoint
-: ApiEndpoint.WithoutRequest.WithResponse<StringResponse>
+    : ApiEndpoint.WithRequest<ViewHunterProfileEndpoint.ProfileRequest>
 {
-    [HttpGet("hunter/{HunterId}/profile")]
-    public override async Task<ActionResult<StringResponse>> HandleAsync()
+    [HttpGet("hunter-profile")]
+    public override Task<IResult> HandleAsync([FromBody] ProfileRequest request)
     {
-        Console.WriteLine("Request received: " + DateTime.Now);
-        return new StringResponse("Hello World!");
+        throw new NotImplementedException();
     }
+
+    public record ProfileRequest(string HunterId);
 }
 
 public record StringResponse
 {
     public StringResponse(string helloWorld)
     {
-        
     }
 }
-
-public record ProfileRequest([FromRoute]string HunterId);
-

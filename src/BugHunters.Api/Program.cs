@@ -1,5 +1,3 @@
-using BugHunters.Api.Common.FunctionalCore;
-using BugHunters.Api.Common.HandlerContracts;
 using BugHunters.Api.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,9 +10,6 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.RegisterCoreServices();
-builder.Services.RegisterCommandHandlers();
 
 builder.Services.AddDbContext<BugHunterContext>(options =>
 {

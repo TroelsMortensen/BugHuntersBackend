@@ -1,5 +1,3 @@
-using BugHunters.Api.Common.FunctionalCore;
-using BugHunters.Api.Common.HandlerContracts;
 using BugHunters.Api.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,9 +11,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.RegisterCoreServices();
-builder.Services.RegisterCommandHandlers();
-
 builder.Services.AddDbContext<BugHunterContext>(options =>
 {
     options.UseSqlite(@"Data Source = BugHunters.db");
@@ -26,6 +21,7 @@ builder.Services.AddDbContext<BugHunterContext>(options =>
 var app = builder.Build();
 app.MapControllers();
 
+// TODO should probably close this a bit at some point somehow
 app.UseCors(x => x
     .AllowAnyMethod()
     .AllowAnyHeader()

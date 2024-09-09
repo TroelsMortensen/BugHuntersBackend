@@ -1,8 +1,7 @@
 ﻿using System.Net;
 using BugHunters.Api.Entities;
-using BugHunters.Api.Entities.Values.Hunter;
-using BugHunters.Api.Entities.Values.StrongId;
-using BugHunters.Api.Features.CatchBug;
+using BugHunters.Api.Entities.Common;
+using BugHunters.Api.Entities.HunterEntity;
 using BugHunters.Api.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +9,8 @@ namespace IntegrationTests.Features;
 
 public class CatchBugTests
 {
+    public record CatchBugRequestCopy(string BugId, string HunterId);
+
     [Fact]
     public async Task CatchBug_ValidHunterAndBug_ShouldReturnOk()
     {
@@ -18,7 +19,7 @@ public class CatchBugTests
         Id<Hunter> hunterId = await AddValidHunter(waf);
         HttpClient client = waf.CreateClient();
 
-        CatchBugRequest request = new(bugId.Value.ToString(), hunterId.Value.ToString());
+        CatchBugRequestCopy request = new(bugId.Value.ToString(), hunterId.Value.ToString());
 
         HttpResponseMessage httpResponse = await client.PostAsync("/api/catch-bug", JsonContent.Create(request));
         Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
@@ -33,28 +34,25 @@ public class CatchBugTests
     [Fact]
     public async Task CatchBug_HunterDoesNotExist_ShouldReturnBadRequest()
     {
-        
     }
-    
+
     [Fact]
     public async Task CatchBug_BugDoesNotExist_ShouldReturnBadRequest()
     {
-        
     }
 
     [Fact]
     public async Task CatchBug_BugIsAlreadyCaught_ShouldReturnBadRequest()
     {
-        
     }
-    
+
     private static async Task<Id<Hunter>> AddValidHunter(BugHunterWebAppFactory waf)
     {
         Id<Hunter> hunterId = Id<Hunter>.New();
         Hunter hunter = new(
             hunterId,
-            DisplayName.FromString("Troels").EnsureValidResult().Payload,
-            ViaId.FromString("trmo").EnsureValidResult().Payload
+            DisplayName.FromString("Troels").ForceValue(),
+            ViaId.FromString("trmo").ForceValue()
         );
         await using BugHunterContext ctx = waf.Services.CreateScope().ServiceProvider.GetRequiredService<BugHunterContext>();
         await ctx.Hunters.AddAsync(hunter);

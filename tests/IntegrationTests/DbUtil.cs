@@ -1,4 +1,5 @@
-﻿using BugHunters.Api.Persistence;
+﻿using BugHunters.Api.Common.Result;
+using BugHunters.Api.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace IntegrationTests;
@@ -15,4 +16,10 @@ public static class DbUtil
         context.Database.EnsureCreated();
         return context;
     }
+
+    public static T ForceValue<T>(this Result<T> result) =>
+        result.Match(
+            value => value,
+            _ => throw new Exception("Should not happen.")
+        );
 }

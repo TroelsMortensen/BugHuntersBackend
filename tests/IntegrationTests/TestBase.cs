@@ -12,5 +12,4 @@ public abstract class TestBase
         factory = new BugHunterWebAppFactory();
     }
 
-    protected RegisterHunterEndpoint.RegisterRequest CreateValidRegisterRequest() => new("Troels", "trmo");
 }

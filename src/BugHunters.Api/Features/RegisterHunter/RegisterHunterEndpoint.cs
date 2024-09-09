@@ -1,25 +1,40 @@
 ﻿using BugHunters.Api.Common.Endpoint;
-using BugHunters.Api.Common.HandlerContracts;
+using BugHunters.Api.Entities;
+using BugHunters.Api.Entities.Common;
+using BugHunters.Api.Entities.HunterEntity;
+using BugHunters.Api.Persistence;
 using Microsoft.AspNetCore.Mvc;
+using static BugHunters.Api.Common.Result.ResultExt;
 
 namespace BugHunters.Api.Features.RegisterHunter;
 
-public class RegisterHunterEndpoint(ICommandHandler<RegisterHunterCommand> handler)
-    : ApiEndpoint.WithRequest<RegisterHunterEndpoint.RegisterRequest>.WithResponse<RegisterHunterEndpoint.RegisterResponse>
+public class RegisterHunterEndpoint(BugHunterContext context)
+    : ApiEndpoint.WithRequest<RegisterHunterEndpoint.RegisterRequest>
 {
     [HttpPost("register-hunter")]
-    public override async Task<ActionResult<RegisterResponse>> HandleAsync([FromBody] RegisterRequest request)
-    {
-        string id = Guid.NewGuid().ToString();
-        RegisterHunterCommand command = new(id, request.Name, request.ViaId);
-        Result<None> result = await handler.HandleAsync(command);
+    public override async Task<IResult> HandleAsync([FromBody] RegisterRequest request) =>
+        await Id<Hunter>.New()
+            .ToResult()
+            .Bind(id => RequestToHunter(request, id))
+            .Map(hunter => context.Hunters.Add(hunter).Entity)
+            .Tee(context.TrySaveChangesAsync)
+            .Match(
+                hunter => Results.Ok(HunterToResponse(hunter)),
+                ToProblemDetails
+            );
 
-        return result.IsSuccess
-            ? Ok(new RegisterResponse(id))
-            : BadRequest(result.Errors);
-    }
+    private static Result<Hunter> RequestToHunter(RegisterRequest request, Id<Hunter> hunterId) =>
+        ValuesToObject(
+            hunterId.ToResult(),
+            DisplayName.FromString(request.Name),
+            ViaId.FromString(request.ViaId),
+            (id, name, viaId) => new Hunter(id, name, viaId)
+        );
+
+    private static RegisterResponse HunterToResponse(Hunter hunter) =>
+        new(hunter.Id.Value.ToString(), hunter.DisplayName.Value, hunter.ViaId.Value);
 
     public record RegisterRequest(string Name, string ViaId);
 
-    public record RegisterResponse(string Id);
+    private record RegisterResponse(string HunterId, string HunterName, string ViaId);
 }

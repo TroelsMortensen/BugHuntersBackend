@@ -1,146 +1,312 @@
-﻿using System.Collections.Immutable;
-using System.Text.Json;
+﻿using static BugHunters.Api.Common.Result.ResultExt;
 
 namespace BugHunters.Api.Common.Result;
 
-public class Result<T> : Result, IFluentResultValidation<T>
+public abstract record Result;
+
+public abstract record Failure : Result;
+
+public abstract record Result<T> : Result
 {
-    private readonly T payload = default!;
+    public static implicit operator Result<T>(ResultError error) =>
+        Failure<T>(error);
 
-    public T Payload
-    {
-        get
-        {
-            AssertAccessible();
-            return payload;
-        }
-    }
-
-    private void AssertAccessible()
-    {
-        if (Errors.Any()) throw new OperationResultHasErrors();
-        if (ValueIsDefault()) throw new PayloadIsEmpty();
-        if (new None().Equals(payload)) throw new OperationResultContainsNone();
-    }
-
-    private bool ValueIsDefault()
-        => EqualityComparer<T>.Default.Equals(payload, default);
-
-    public bool IsFailure => errors.Count != 0 || ValueIsDefault();
-
-    public bool IsSuccess => !IsFailure;
-
-    public Result<TOther> ToOther<TOther>()
-        => Errors.ToList();
-
-    public static implicit operator Result<T>(T value)
-        => new(value);
-
-    public static implicit operator Result<T>(ResultError error)
-        => new(error);
-
-    public static implicit operator Result<T>(List<ResultError> errors)
-    {
-        Result<T> res = new Result<T>();
-        res.errors.AddRange(errors);
-        return res;
-    }
-
-    internal Result(T payload)
-        => this.payload = payload;
-
-    private Result(ResultError resultError)
-        => errors.Add(resultError);
-
-    internal Result()
-    {
-    }
-
-    // This is for testing purposes. It should not be used in production code.
-    public Result<T> EnsureValidResult()
-    {
-        if (IsFailure)
-        {
-            throw new Exception("Invalid result, you messed up: " + JsonSerializer.Serialize(errors, new JsonSerializerOptions
-            {
-                WriteIndented = true
-            }));
-        }
-
-        return this;
-    }
-
-    public Result<T> WithPayloadIfSuccess(Func<T> instantiatePayload)
-        => errors.Count != 0 ? this : instantiatePayload();
-
-
-    public IFluentResultValidation<T> AssertThat(Func<bool> validation, ResultError error)
-    {
-        if (!validation())
-        {
-            errors.Add(error);
-        }
-
-        return this;
-    }
-
-    public Result<T> ToResult() => this;
-
-    public static Result<T> Failure(ResultError resultError)
-    {
-        Result<T> result = new Result<T>();
-        result.errors.Add(resultError);
-        return result;
-    }
+    public static implicit operator Result<T>(T value) =>
+        Success(value);
 }
 
-public abstract class Result
-{
-    public IEnumerable<ResultError> Errors => errors.ToImmutableList();
+public record Success<T>(T Value) : Result<T>;
 
-    protected readonly List<ResultError> errors = [];
-
-
-    public static Result<T> Success<T>(T value)
-        => new(value);
-
-    public static Result<None> Success()
-        => new(new None());
-
-    // public static Result<T> Failure<T>(string errorCode, string message)
-    //     => new(new ResultError(errorCode, message));
-
-    public static Result<None> CombineResults(params Result[] results)
-    {
-        Result<None> result = results.SelectMany(r => r.Errors).ToList();
-        return result.WithPayloadIfSuccess(() => new None());
-    }
-
-    public static Result<T> CombineResultsInto<T>(params Result[] results)
-        => results.SelectMany(r => r.Errors).ToList();
-
-
-    public static IFluentResultValidation<None> StartValidation()
-        => Success();
-
-    public static IFluentResultValidation<T> StartValidation<T>()
-        => new Result<T>();
-}
-
-public class Success<T>(T Value) : Result<T>(Value);
-
-public class OperationResultHasErrors() : Exception("Cannot access result value, if the result has errors");
-
-public class PayloadIsEmpty() : Exception("Result value not set");
-
-public class OperationResultContainsNone() : Exception("Result contains none");
+public record Failure<T>(IEnumerable<ResultError> Errors) : Result<T>;
 
 public record ResultError(string Code, string Message);
 
 public record None;
 
-public interface IFluentResultValidation<T>
+public static class ResultExt
 {
-    IFluentResultValidation<T> AssertThat(Func<bool> validation, ResultError error);
-    public Result<T> WithPayloadIfSuccess(Func<T> instantiatePayload);
+    public static Result<T> Success<T>(T value) =>
+        new Success<T>(value);
+
+    public static Result<None> Success() =>
+        None;
+
+    public static Result<T> Failure<T>(params ResultError[] errors) =>
+        new Failure<T>(errors);
+
+    public static Result<None> Failure(params ResultError[] errors) =>
+        new Failure<None>(errors);
+
+    public static Result<T> ToResult<T>(this T self) =>
+        self switch
+        {
+            null => Failure<T>(new ResultError("NullValue", "Value is null.")),
+            _ => Success(self)
+        };
+
+    /**
+     * Map functions
+     */
+    public static Result<R> Map<T, R>(this Result<T> self, Func<T, R> func) =>
+        self switch
+        {
+            Success<T> successResult => Success(func(successResult.Value)),
+            Failure<T> failureResult => Failure<R>(failureResult.Errors.ToArray()),
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
+
+    public static async Task<Result<R>> Map<T, R>(this Result<T> self, Func<T, Task<R>> func) =>
+        self switch
+        {
+            Success<T> successResult => Success(await func(successResult.Value)),
+            Failure<T> failureResult => Failure<R>(failureResult.Errors.ToArray()),
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
+
+    public static async Task<Result<R>> Map<T, R>(this Task<Result<T>> self, Func<T, Task<R>> func) =>
+        (await self) switch
+        {
+            Success<T> successResult => await func(successResult.Value),
+            Failure<T> failureResult => Failure<R>(failureResult.Errors.ToArray()),
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
+
+    public static async Task<Result<R>> Map<T, R>(this Task<Result<T>> self, Func<T, R> func) =>
+        (await self) switch
+        {
+            Success<T> successResult => func(successResult.Value),
+            Failure<T> failureResult => Failure<R>(failureResult.Errors.ToArray()),
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
+
+    /**
+     * Bind functions
+     */
+    public static Result<R> Bind<T, R>(this Result<T> self, Func<T, Result<R>> func) =>
+        self switch
+        {
+            Success<T> successResult => func(successResult.Value),
+            Failure<T> failureResult => Failure<R>(failureResult.Errors.ToArray()),
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
+
+    public static async Task<Result<R>> Bind<T, R>(this Result<T> self, Func<T, Task<Result<R>>> func) =>
+        self switch
+        {
+            Success<T> successResult => await func(successResult.Value),
+            Failure<T> failureResult => Failure<R>(failureResult.Errors.ToArray()),
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
+
+    public static async Task<Result<R>> Bind<T, R>(this Task<Result<T>> self, Func<T, Result<R>> func) =>
+        (await self) switch
+        {
+            Success<T> successResult => func(successResult.Value),
+            Failure<T> failureResult => Failure<R>(failureResult.Errors.ToArray()),
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
+
+
+    public static async Task<Result<R>> Bind<T, R>(this Task<Result<T>> self, Func<T, Task<Result<R>>> func) =>
+        (await self) switch
+        {
+            Success<T> successResult => await func(successResult.Value),
+            Failure<T> failureResult => Failure<R>(failureResult.Errors.ToArray()),
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
+
+    /**
+     * Tee functions
+     */
+    public static async Task<Result<T>> Tee<T>(this Result<T> self, Func<Task<Result<None>>> func) =>
+        self switch
+        {
+            Success<T> => await PerformTeeAsync(self, func),
+            _ => self
+        };
+
+    public static async Task<Result<T>> Tee<T>(this Task<Result<T>> self, Func<Task<Result<None>>> func) =>
+        (await self) switch
+        {
+            Success<T> success => await PerformTeeAsync(success, func),
+            _ => await self
+        };
+
+    public static async Task<Result<T>> Tee<T>(this Task<Result<T>> self, Func<Result<None>> func) =>
+        (await self) switch
+        {
+            Success<T> success => PerformTee(success, func),
+            _ => await self
+        };
+
+    // public static async Task<Result<T1>> Tee<T1, T2>(this Result<T1> self, Func<Task<T2>> func)
+    // {
+    //     if (self is Success<T1>)
+    //     {
+    //         await func();
+    //     }
+    //
+    //     return self;
+    // }
+
+
+    private static async Task<Result<T>> PerformTeeAsync<T>(Result<T> result, Func<Task<Result<None>>> func) =>
+        (await func()).Match(
+            _ => result,
+            errors => Failure<T>(errors.ToArray())
+        );
+
+    private static Result<T> PerformTee<T>(Result<T> result, Func<Result<None>> func) =>
+        func().Match(
+            _ => result,
+            errors => Failure<T>(errors.ToArray())
+        );
+
+    /**
+     * Validation
+     */
+    public static Result<None> AssertAll(params Func<Result<None>>[] validations) =>
+        validations
+            .Select(validation => validation())
+            .Merge();
+
+
+    public static Result<T> WithPayloadIfSuccess<T>(this Result<None> self, Func<T> payload) =>
+        self switch
+        {
+            Success<T> => Success(payload()),
+            Failure<T> failure => failure,
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
+
+    /**
+     * Match functions
+     */
+    public static R Match<T, R>(
+        this Result<T> self,
+        Func<T, R> onSuccess,
+        Func<IEnumerable<ResultError>, R> onFailure
+    ) =>
+        self switch
+        {
+            Success<T> successResult => onSuccess(successResult.Value),
+            Failure<T> failureResult => onFailure(failureResult.Errors),
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
+
+    public static async Task<R> Match<T, R>(
+        this Task<Result<T>> self,
+        Func<T, R> onSuccess,
+        Func<IEnumerable<ResultError>, R> onFailure
+    ) =>
+        (await self) switch
+        {
+            Success<T> successResult => onSuccess(successResult.Value),
+            Failure<T> failureResult => onFailure(failureResult.Errors),
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
+
+    /**
+     * Extract value function
+     */
+    public static T ValueOr<T>(this Result<T> self, Func<IEnumerable<ResultError>, T> onFailure) =>
+        self switch
+        {
+            Success<T> successResult => successResult.Value,
+            Failure<T> failure => onFailure(failure.Errors),
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
+
+    /**
+     * Merge multiple results
+     */
+    private static Result<None> Combine(params Result[] results) =>
+        results
+            .ToList()
+            .Merge();
+
+    private static Result<None> Merge(this IEnumerable<Result<None>> all) =>
+        all.SelectMany(result =>
+                result switch
+                {
+                    Failure<None> failure => failure.Errors,
+                    _ => Array.Empty<ResultError>()
+                })
+            .ErrorsToSingleResult();
+
+// Sometimes the contained object type is not important, only the errors.
+    private static Result<None> Merge(this IEnumerable<Result> all) =>
+        all.SelectMany(result =>
+                result switch
+                {
+                    Failure<None> failure => failure.Errors,
+                    _ => Array.Empty<ResultError>()
+                })
+            .ErrorsToSingleResult();
+
+    private static Result<None> ErrorsToSingleResult(this IEnumerable<ResultError> errors) =>
+        errors.Any()
+            ? Failure<None>(errors.ToArray())
+            : Success();
+
+/*
+ * Extract values of multiple results, and create a new object from the values, or return a failure with all errors.
+ * Multiple overloads for different number of input results.
+ */
+    public static Result<TOut> ValuesToObject<T1, T2, TOut>(Result<T1> r1, Result<T2> r2, Func<T1, T2, TOut> func) =>
+        (r1, r2) switch
+        {
+            (Success<T1> s1, Success<T2> s2) => Success(func(s1.Value, s2.Value)),
+            _ => Combine(r1, r2).Match(
+                _ => throw new Exception("Should not happen."),
+                errors => Failure<TOut>(errors.ToArray())
+            )
+        };
+
+    public static Result<TOut> ValuesToObject<T1, T2, T3, TOut>(Result<T1> r1, Result<T2> r2, Result<T3> r3, Func<T1, T2, T3, TOut> func) =>
+        (r1, r2, r3) switch
+        {
+            (Success<T1> s1, Success<T2> s2, Success<T3> s3) => Success(func(s1.Value, s2.Value, s3.Value)),
+            _ => Combine(r1, r2, r3).Match(
+                _ => throw new Exception("Should not happen."),
+                errors => Failure<TOut>(errors.ToArray())
+            )
+        };
+
+    private static Result<None> None => Success(new None());
+
+    /**
+     * Where function
+     */
+    public static Result<T> Where<T>(this Result<T> self, Func<T, Result<T>> predicate) =>
+        self switch
+        {
+            Success<T> successResult => predicate(successResult.Value),
+            Failure<T> failureResult => failureResult,
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
+
+    public static async Task<Result<T>> Where<T>(this Result<T> self, Func<T, Task<Result<T>>> predicate) =>
+        self switch
+        {
+            Success<T> successResult => await predicate(successResult.Value),
+            Failure<T> failureResult => failureResult,
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
+
+    public static async Task<Result<T>> Where<T>(this Task<Result<T>> self, Func<T, Result<T>> predicate) =>
+        (await self) switch
+        {
+            Success<T> successResult => predicate(successResult.Value),
+            Failure<T> failureResult => failureResult,
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
+
+    public static async Task<Result<T>> Where<T>(this Task<Result<T>> self, Func<T, Task<Result<T>>> predicate) =>
+        (await self) switch
+        {
+            Success<T> successResult => await predicate(successResult.Value),
+            Failure<T> failureResult => failureResult,
+            _ => throw new ArgumentException("Unknown type of result.")
+        };
 }

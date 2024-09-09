@@ -21,6 +21,7 @@ builder.Services.AddDbContext<BugHunterContext>(options =>
 var app = builder.Build();
 app.MapControllers();
 
+// TODO should probably close this a bit at some point somehow
 app.UseCors(x => x
     .AllowAnyMethod()
     .AllowAnyHeader()
